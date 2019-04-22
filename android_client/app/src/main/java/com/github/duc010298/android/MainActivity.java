@@ -1,5 +1,6 @@
 package com.github.duc010298.android;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,9 +25,12 @@ public class MainActivity extends AppCompatActivity {
         connectView();
 
         String token = getTokenFromMemory();
-        if(token != null) {
+        if(token != null && !token.isEmpty()) {
             //testToken here
-            Toast.makeText(this, token, Toast.LENGTH_LONG).show();
+            //TODO start service here
+
+            Intent intent = new Intent(this, LoginSuccessActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -39,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
         String username = txtUsername.getText().toString().trim().toLowerCase();
         String password = txtPassword.getText().toString().trim().toLowerCase();
 
+        if(username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Username and password cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String token = null;
 
         LoginTask loginTask = new LoginTask(this);
@@ -56,6 +64,11 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor edit = pre.edit();
         edit.putString("token", token);
         edit.apply();
+
+        //TODO start service here
+
+        Intent intent = new Intent(this, LoginSuccessActivity.class);
+        startActivity(intent);
     }
 
     private String getTokenFromMemory() {
