@@ -2,7 +2,8 @@ package com.github.duc010298.web_api.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.sql.Timestamp;
+
+import java.util.Date;
 import java.util.List;
 
 
@@ -16,7 +17,7 @@ public class Device implements Serializable {
 	private String imei;
 	private String deviceName;
 	private Boolean isOnline;
-	private Timestamp lastOnline;
+	private Date lastOnline;
 	private AppUser appUser;
 	private List<LocationHistory> locationHistories;
 
@@ -56,11 +57,11 @@ public class Device implements Serializable {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="last_online")
-	public Timestamp getLastOnline() {
+	public Date getLastOnline() {
 		return this.lastOnline;
 	}
 
-	public void setLastOnline(Timestamp lastOnline) {
+	public void setLastOnline(Date lastOnline) {
 		this.lastOnline = lastOnline;
 	}
 
