@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.github.duc010298.android.services.MyService;
+
 public class LoginSuccessActivity extends AppCompatActivity {
 
     @Override
@@ -20,7 +22,14 @@ public class LoginSuccessActivity extends AppCompatActivity {
         edit.putString("token", "");
         edit.apply();
 
-        //TODO stop service here
+        SharedPreferences pre2 = getSharedPreferences("ServicesStatus", MODE_PRIVATE);
+        SharedPreferences.Editor edit2 = pre2.edit();
+        edit2.putBoolean("isLogout", false);
+        edit2.apply();
+
+        MyService myService = new MyService();
+        Intent myServiceIntent = new Intent(getApplicationContext(), myService.getClass());
+        stopService(myServiceIntent);
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

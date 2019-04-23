@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -45,8 +46,14 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Intent broadcastIntent = new Intent("ac.in.ActivityRecognition.RestartSensor");
-        sendBroadcast(broadcastIntent);
+
+        //TODO check SharedPreferences before sendBroadcast
+        SharedPreferences pre = getSharedPreferences("ServicesStatus", MODE_PRIVATE);
+        if(pre.getBoolean("isLogout", false)) {
+            Intent broadcastIntent = new Intent("ac.in.ActivityRecognition.RestartSensor");
+            sendBroadcast(broadcastIntent);
+        }
+
         locationManager.removeUpdates(listener);
     }
 

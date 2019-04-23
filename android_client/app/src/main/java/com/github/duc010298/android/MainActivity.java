@@ -33,11 +33,7 @@ public class MainActivity extends AppCompatActivity {
         if(token != null && !token.isEmpty()) {
             //TODO testToken here
 
-            MyService myService = new MyService();
-            Intent myServiceIntent = new Intent(getApplicationContext(), myService.getClass());
-            if (!isMyServiceRunning(myService.getClass())) {
-                startService(myServiceIntent);
-            }
+            startMyService();
 
             Intent intent = new Intent(this, LoginSuccessActivity.class);
             startActivity(intent);
@@ -75,11 +71,7 @@ public class MainActivity extends AppCompatActivity {
         edit.putString("token", token);
         edit.apply();
 
-        MyService myService = new MyService();
-        Intent myServiceIntent = new Intent(getApplicationContext(), myService.getClass());
-        if (!isMyServiceRunning(myService.getClass())) {
-            startService(myServiceIntent);
-        }
+        startMyService();
 
         Intent intent = new Intent(this, LoginSuccessActivity.class);
         startActivity(intent);
@@ -98,5 +90,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    private void startMyService() {
+        SharedPreferences pre = getSharedPreferences("ServicesStatus", MODE_PRIVATE);
+        SharedPreferences.Editor edit = pre.edit();
+        edit.putBoolean("isLogout", false);
+        edit.apply();
+
+        MyService myService = new MyService();
+        Intent myServiceIntent = new Intent(getApplicationContext(), myService.getClass());
+        if (!isMyServiceRunning(myService.getClass())) {
+            startService(myServiceIntent);
+        }
     }
 }
