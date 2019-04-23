@@ -1,7 +1,5 @@
 package com.github.duc010298.android;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -10,10 +8,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.github.duc010298.android.services.MyService;
 import com.github.duc010298.android.util.LoginTask;
-
-import java.util.concurrent.ExecutionException;
+import com.github.duc010298.android.util.ServicesHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
         if(token != null && !token.isEmpty()) {
             //TODO testToken here
 
-            startMyService();
+            ServicesHelper servicesHelper = new ServicesHelper();
+            servicesHelper.startMyService(this);
 
             Intent intent = new Intent(this, LoginSuccessActivity.class);
             startActivity(intent);
@@ -57,51 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
         LoginTask loginTask = new LoginTask(this);
         loginTask.execute(username, password);
-        try {
-            token = loginTask.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if(token == null) return;
-
-        SharedPreferences pre = getSharedPreferences("SecretToken", MODE_PRIVATE);
-        SharedPreferences.Editor edit = pre.edit();
-        edit.putString("token", token);
-        edit.apply();
-
-        startMyService();
-
-        Intent intent = new Intent(this, LoginSuccessActivity.class);
-        startActivity(intent);
     }
 
     private String getTokenFromMemory() {
         SharedPreferences pre = getSharedPreferences("SecretToken", MODE_PRIVATE);
         return pre.getString("token", null);
-    }
-
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void startMyService() {
-        SharedPreferences pre = getSharedPreferences("ServicesStatus", MODE_PRIVATE);
-        SharedPreferences.Editor edit = pre.edit();
-        edit.putBoolean("isLogout", false);
-        edit.apply();
-
-        MyService myService = new MyService();
-        Intent myServiceIntent = new Intent(getApplicationContext(), myService.getClass());
-        if (!isMyServiceRunning(myService.getClass())) {
-            startService(myServiceIntent);
-        }
     }
 }

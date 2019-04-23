@@ -1,9 +1,14 @@
 package com.github.duc010298.android.util;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+
+import com.github.duc010298.android.LoginSuccessActivity;
 
 import java.io.BufferedWriter;
 import java.io.OutputStream;
@@ -18,12 +23,16 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class LoginTask extends AsyncTask<String, String, String> {
 
     private final Context mContext;
+    private ProgressDialog dialog;
 
     public LoginTask (Context context){
         mContext = context;
+        dialog = new ProgressDialog(mContext);
     }
 
     @Override
@@ -42,9 +51,9 @@ public class LoginTask extends AsyncTask<String, String, String> {
             URL url = new URL(urlLogin);
 
             conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(15000);
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
+            conn.setConnectTimeout(15000);
 
             try (OutputStream os = conn.getOutputStream();
                  BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8))) {
@@ -80,6 +89,32 @@ public class LoginTask extends AsyncTask<String, String, String> {
 
     protected void onProgressUpdate(String... params) {
         Toast.makeText(mContext, params[0], Toast.LENGTH_LONG).show();
+    }
+
+    protected void onPreExecute() {
+        dialog.setMessage("Signing in, please wait");
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+
+    protected void onPostExecute(String param) {
+        if(param != null) {
+            SharedPreferences pre = mContext.getSharedPreferences("SecretToken", MODE_PRIVATE);
+            SharedPreferences.Editor edit = pre.edit();
+            edit.putString("token", param);
+            edit.apply();
+
+            ServicesHelper servicesHelper = new ServicesHelper();
+            servicesHelper.startMyService(mContext);
+
+            Intent intent = new Intent(mContext, LoginSuccessActivity.class);
+            mContext.startActivity(intent);
+        }
+
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+        }
     }
 
     private String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
