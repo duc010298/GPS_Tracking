@@ -23,13 +23,8 @@ public class LoginSuccessActivity extends AppCompatActivity {
         edit.putString("token", "");
         edit.apply();
 
-        SharedPreferences pre2 = getSharedPreferences("ServicesStatus", MODE_PRIVATE);
-        SharedPreferences.Editor edit2 = pre2.edit();
-        edit2.putBoolean("isLogout", false);
-        edit2.apply();
-
         ServicesHelper servicesHelper = new ServicesHelper();
-        servicesHelper.stopMyService(this);
+        servicesHelper.stopMyService(this, true);
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

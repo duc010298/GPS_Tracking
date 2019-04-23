@@ -30,7 +30,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
     private final Context mContext;
     private ProgressDialog dialog;
 
-    public LoginTask (Context context){
+    public LoginTask(Context context) {
         mContext = context;
         dialog = new ProgressDialog(mContext);
     }
@@ -46,7 +46,8 @@ public class LoginTask extends AsyncTask<String, String, String> {
 
         HttpURLConnection conn = null;
 
-        tryToLogin: try {
+        tryToLogin:
+        try {
             String urlLogin = "http://10.20.30.77:8080/loginToken";
             URL url = new URL(urlLogin);
 
@@ -62,14 +63,17 @@ public class LoginTask extends AsyncTask<String, String, String> {
             }
 
             int responseCode = conn.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
+            if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
                 publishProgress("Login failed, username or password incorrect");
                 break tryToLogin;
             }
             if (responseCode == HttpsURLConnection.HTTP_OK) {
-                String token =  conn.getHeaderField("Authorization");
-                if(token != null && !token.isEmpty()) {
+                String token = conn.getHeaderField("Authorization");
+                if (token != null && !token.isEmpty()) {
                     publishProgress("Login successfully");
+                    if (conn != null) {
+                        conn.disconnect();
+                    }
                     return token;
                 } else {
                     publishProgress("Login failed, username or password incorrect");
@@ -80,7 +84,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
         } catch (Exception e) {
             publishProgress("Login failed, cannot connect to server");
         } finally {
-            if(conn != null) {
+            if (conn != null) {
                 conn.disconnect();
             }
         }
@@ -99,7 +103,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
     }
 
     protected void onPostExecute(String param) {
-        if(param != null) {
+        if (param != null) {
             SharedPreferences pre = mContext.getSharedPreferences("SecretToken", MODE_PRIVATE);
             SharedPreferences.Editor edit = pre.edit();
             edit.putString("token", param);
@@ -120,7 +124,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
     private String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
-        for(Map.Entry<String, String> entry : params.entrySet()){
+        for (Map.Entry<String, String> entry : params.entrySet()) {
             if (first) {
                 first = false;
             } else {

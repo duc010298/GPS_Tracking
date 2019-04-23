@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.github.duc010298.android.util.LoginTask;
-import com.github.duc010298.android.util.ServicesHelper;
+import com.github.duc010298.android.util.TestTokenTask;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -32,13 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
         String token = getTokenFromMemory();
         if (token != null && !token.isEmpty()) {
-            //TODO testToken here
-
-            ServicesHelper servicesHelper = new ServicesHelper();
-            servicesHelper.startMyService(this);
-
-            Intent intent = new Intent(this, LoginSuccessActivity.class);
-            startActivity(intent);
+            TestTokenTask testTokenTask = new TestTokenTask(this);
+            testTokenTask.execute(token);
         }
     }
 
@@ -95,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Username and password cannot be empty", Toast.LENGTH_SHORT).show();
             return;
         }
-        String token = null;
 
         LoginTask loginTask = new LoginTask(this);
         loginTask.execute(username, password);

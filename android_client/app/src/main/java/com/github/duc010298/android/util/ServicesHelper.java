@@ -24,7 +24,12 @@ public class ServicesHelper {
         }
     }
 
-    public void stopMyService(Context mContext) {
+    public void stopMyService(Context mContext, boolean isLogout) {
+        SharedPreferences pre2 = mContext.getSharedPreferences("ServicesStatus", MODE_PRIVATE);
+        SharedPreferences.Editor edit2 = pre2.edit();
+        edit2.putBoolean("isLogout", isLogout);
+        edit2.apply();
+
         MyService myService = new MyService();
         Intent myServiceIntent = new Intent(mContext.getApplicationContext(), myService.getClass());
         mContext.stopService(myServiceIntent);

@@ -47,7 +47,6 @@ public class MyService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        //TODO check SharedPreferences before sendBroadcast
         SharedPreferences pre = getSharedPreferences("ServicesStatus", MODE_PRIVATE);
         if(pre.getBoolean("isLogout", false)) {
             Intent broadcastIntent = new Intent("ac.in.ActivityRecognition.RestartSensor");
