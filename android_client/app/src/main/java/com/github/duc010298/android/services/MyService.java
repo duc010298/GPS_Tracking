@@ -48,7 +48,7 @@ public class MyService extends Service {
         super.onDestroy();
 
         SharedPreferences pre = getSharedPreferences("ServicesStatus", MODE_PRIVATE);
-        if(pre.getBoolean("isLogout", false)) {
+        if(!pre.getBoolean("isLogout", true)) {
             Intent broadcastIntent = new Intent("ac.in.ActivityRecognition.RestartSensor");
             sendBroadcast(broadcastIntent);
         }
