@@ -54,6 +54,8 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
             if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
                 publishProgress("Token invalid or expired");
                 removeToken();
+                ServicesHelper servicesHelper = new ServicesHelper();
+                servicesHelper.stopMyService(mContext, true);
                 break tryToLogin;
             }
             Log.i("responseCode", responseCode+ "");
@@ -82,6 +84,8 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
                 } else {
                     publishProgress("Token invalid or expired");
                     removeToken();
+                    ServicesHelper servicesHelper = new ServicesHelper();
+                    servicesHelper.stopMyService(mContext, true);
                 }
             } else {
                 publishProgress("Login failed, cannot connect to server");
