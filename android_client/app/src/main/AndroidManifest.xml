@@ -19,8 +19,17 @@
         tools:ignore="GoogleAppIndexingWarning">
         <service
             android:name=".services.MyService"
+            android:enabled="true" />
+
+        <receiver
+            android:name=".SensorRestartBroadcastReceiver"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"
+            android:label="RestartServiceWhenStopped">
+            <intent-filter>
+                <action android:name="ac.in.ActivityRecognition.RestartSensor" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".LoginSuccessActivity"

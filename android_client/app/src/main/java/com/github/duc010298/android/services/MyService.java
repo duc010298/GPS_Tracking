@@ -45,6 +45,8 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Intent broadcastIntent = new Intent("ac.in.ActivityRecognition.RestartSensor");
+        sendBroadcast(broadcastIntent);
         locationManager.removeUpdates(listener);
     }
 
