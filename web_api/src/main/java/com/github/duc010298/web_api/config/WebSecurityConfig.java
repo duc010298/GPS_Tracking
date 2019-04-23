@@ -49,6 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/ws/**").permitAll()
+                .antMatchers("/TestToken").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JWTLoginFilter("/loginToken", authenticationManager(), appUserRepository, appRoleRepository), UsernamePasswordAuthenticationFilter.class)
