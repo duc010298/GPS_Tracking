@@ -1,11 +1,9 @@
 package com.github.duc010298.android;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +15,6 @@ import android.widget.Toast;
 import com.github.duc010298.android.util.LoginTask;
 import com.github.duc010298.android.util.ServicesHelper;
 
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,6 +42,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 1) {
+            for (int i = 0; i < grantResults.length; i++) {
+                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "The application does not have enough permissions", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            }
+        }
+    }
+
     private void checkPermission() {
         String[] listPermission = new String[]{
                 android.Manifest.permission.INTERNET,
@@ -68,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             isHaveEnoughPermission = false;
         }
-        if(!isHaveEnoughPermission) {
+        if (!isHaveEnoughPermission) {
             ActivityCompat.requestPermissions(this, listPermission, 1);
         }
     }
@@ -95,14 +104,5 @@ public class MainActivity extends AppCompatActivity {
     private String getTokenFromMemory() {
         SharedPreferences pre = getSharedPreferences("SecretToken", MODE_PRIVATE);
         return pre.getString("token", null);
-    }
-
-    private void restartActivity(Activity activity) {
-        if (Build.VERSION.SDK_INT >= 11) {
-            activity.recreate();
-        } else {
-            activity.finish();
-            activity.startActivity(activity.getIntent());
-        }
     }
 }
