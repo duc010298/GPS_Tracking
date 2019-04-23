@@ -5,6 +5,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -14,8 +17,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".LoginSuccessActivity" android:noHistory="true"></activity>
-        <activity android:name=".MainActivity" android:noHistory="true">
+        <service
+            android:name=".services.MyService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity
+            android:name=".LoginSuccessActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".MainActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

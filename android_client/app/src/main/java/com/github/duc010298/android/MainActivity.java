@@ -1,5 +1,7 @@
 package com.github.duc010298.android;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.github.duc010298.android.services.MyService;
 import com.github.duc010298.android.util.LoginTask;
 
 import java.util.concurrent.ExecutionException;
@@ -22,12 +25,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //TODO check permission here
+
         connectView();
 
         String token = getTokenFromMemory();
         if(token != null && !token.isEmpty()) {
-            //testToken here
-            //TODO start service here
+            //TODO testToken here
+
+            MyService myService = new MyService();
+            Intent myServiceIntent = new Intent(getApplicationContext(), myService.getClass());
+            if (!isMyServiceRunning(myService.getClass())) {
+                startService(myServiceIntent);
+            }
 
             Intent intent = new Intent(this, LoginSuccessActivity.class);
             startActivity(intent);
@@ -65,7 +75,11 @@ public class MainActivity extends AppCompatActivity {
         edit.putString("token", token);
         edit.apply();
 
-        //TODO start service here
+        MyService myService = new MyService();
+        Intent myServiceIntent = new Intent(getApplicationContext(), myService.getClass());
+        if (!isMyServiceRunning(myService.getClass())) {
+            startService(myServiceIntent);
+        }
 
         Intent intent = new Intent(this, LoginSuccessActivity.class);
         startActivity(intent);
@@ -74,5 +88,15 @@ public class MainActivity extends AppCompatActivity {
     private String getTokenFromMemory() {
         SharedPreferences pre = getSharedPreferences("SecretToken", MODE_PRIVATE);
         return pre.getString("token", null);
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
