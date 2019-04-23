@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.github.duc010298.android.services.MyService;
+import com.github.duc010298.android.util.ServicesHelper;
 
 public class LoginSuccessActivity extends AppCompatActivity {
 
@@ -27,9 +28,8 @@ public class LoginSuccessActivity extends AppCompatActivity {
         edit2.putBoolean("isLogout", false);
         edit2.apply();
 
-        MyService myService = new MyService();
-        Intent myServiceIntent = new Intent(getApplicationContext(), myService.getClass());
-        stopService(myServiceIntent);
+        ServicesHelper servicesHelper = new ServicesHelper();
+        servicesHelper.stopMyService(this);
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

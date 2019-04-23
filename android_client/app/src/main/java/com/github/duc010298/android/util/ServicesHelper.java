@@ -24,6 +24,12 @@ public class ServicesHelper {
         }
     }
 
+    public void stopMyService(Context mContext) {
+        MyService myService = new MyService();
+        Intent myServiceIntent = new Intent(mContext.getApplicationContext(), myService.getClass());
+        mContext.stopService(myServiceIntent);
+    }
+
     private boolean isMyServiceRunning(Class<?> serviceClass, Context mContext) {
         ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
