@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.github.duc010298.android.services.MyService;
+import com.github.duc010298.android.util.MyDatabaseHelper;
 import com.github.duc010298.android.util.ServicesHelper;
 
 public class LoginSuccessActivity extends AppCompatActivity {
@@ -25,6 +26,9 @@ public class LoginSuccessActivity extends AppCompatActivity {
 
         ServicesHelper servicesHelper = new ServicesHelper();
         servicesHelper.stopMyService(this, true);
+
+        MyDatabaseHelper myDatabaseHelper = new MyDatabaseHelper(this);
+        myDatabaseHelper.cleanDatabase();
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
