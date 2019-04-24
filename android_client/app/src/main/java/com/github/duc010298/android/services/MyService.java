@@ -15,11 +15,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.github.duc010298.android.util.MyDatabaseHelper;
+
 public class MyService extends Service {
     private static final int TWO_MINUTES = 1000 * 60 * 2;
     private LocationManager locationManager;
     private MyLocationListener listener;
     private Location previousBestLocation = null;
+    private MyDatabaseHelper myDatabaseHelper;
 
     public MyService() {
     }
@@ -32,14 +35,16 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        myDatabaseHelper = new MyDatabaseHelper(this);
+
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         listener = new MyLocationListener();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return START_STICKY;
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 300000, 100, listener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300000, 100, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 10, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 10, listener);
         return START_STICKY;
     }
 
@@ -108,8 +113,7 @@ public class MyService extends Service {
         {
             if(isBetterLocation(loc, previousBestLocation)) {
                 previousBestLocation = loc;
-                Log.i("GPS getLatitude", loc.getLatitude()+ "");
-                Log.i("GPS getLongitude", loc.getLongitude()+ "");
+                myDatabaseHelper.addLocationHistory(loc);
             }
         }
 
