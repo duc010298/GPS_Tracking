@@ -48,7 +48,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
 
         tryToLogin:
         try {
-            String urlLogin = "http://10.20.30.77:8080/loginToken";
+            String urlLogin = "http://10.20.30.74:8080/loginToken";
             URL url = new URL(urlLogin);
 
             conn = (HttpURLConnection) url.openConnection();
@@ -110,7 +110,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
             edit.apply();
 
             ServicesHelper servicesHelper = new ServicesHelper();
-            servicesHelper.startMyService(mContext);
+            servicesHelper.startDetectLocationChangeService(mContext);
 
             Intent intent = new Intent(mContext, LoginSuccessActivity.class);
             mContext.startActivity(intent);

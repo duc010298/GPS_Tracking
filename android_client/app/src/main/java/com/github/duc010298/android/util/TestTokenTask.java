@@ -11,13 +11,9 @@ import android.widget.Toast;
 import com.github.duc010298.android.LoginSuccessActivity;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -40,7 +36,7 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
 
         tryToLogin:
         try {
-            String urlLogin = "http://10.20.30.77:8080/TestToken";
+            String urlLogin = "http://10.20.30.74:8080/TestToken";
             URL url = new URL(urlLogin);
 
             conn = (HttpURLConnection) url.openConnection();
@@ -55,7 +51,7 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
                 publishProgress("Token invalid or expired");
                 removeToken();
                 ServicesHelper servicesHelper = new ServicesHelper();
-                servicesHelper.stopMyService(mContext, true);
+                servicesHelper.stopDetectLocationChangeService(mContext, true);
                 break tryToLogin;
             }
             Log.i("responseCode", responseCode+ "");
@@ -76,7 +72,7 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
                     }
 
                     ServicesHelper servicesHelper = new ServicesHelper();
-                    servicesHelper.startMyService(mContext);
+                    servicesHelper.startDetectLocationChangeService(mContext);
 
                     Intent intent = new Intent(mContext, LoginSuccessActivity.class);
                     mContext.startActivity(intent);
@@ -85,7 +81,7 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
                     publishProgress("Token invalid or expired");
                     removeToken();
                     ServicesHelper servicesHelper = new ServicesHelper();
-                    servicesHelper.stopMyService(mContext, true);
+                    servicesHelper.stopDetectLocationChangeService(mContext, true);
                 }
             } else {
                 publishProgress("Login failed, cannot connect to server");

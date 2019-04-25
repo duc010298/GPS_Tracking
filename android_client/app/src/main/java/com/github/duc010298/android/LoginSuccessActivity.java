@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-import com.github.duc010298.android.services.MyService;
 import com.github.duc010298.android.util.MyDatabaseHelper;
 import com.github.duc010298.android.util.ServicesHelper;
 
@@ -25,7 +24,7 @@ public class LoginSuccessActivity extends AppCompatActivity {
         edit.apply();
 
         ServicesHelper servicesHelper = new ServicesHelper();
-        servicesHelper.stopMyService(this, true);
+        servicesHelper.stopDetectLocationChangeService(this, true);
 
         MyDatabaseHelper myDatabaseHelper = new MyDatabaseHelper(this);
         myDatabaseHelper.cleanDatabase();

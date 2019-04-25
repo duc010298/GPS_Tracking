@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <service
-            android:name=".services.MyService"
+            android:name=".services.DetectLocationChangeService"
             android:enabled="true" />
 
         <receiver

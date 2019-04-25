@@ -5,34 +5,36 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import com.github.duc010298.android.services.MyService;
+import com.github.duc010298.android.services.DetectLocationChangeService;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class ServicesHelper {
 
-    public void startMyService(Context mContext) {
+    public void startDetectLocationChangeService(Context mContext) {
         SharedPreferences pre = mContext.getSharedPreferences("ServicesStatus", MODE_PRIVATE);
         SharedPreferences.Editor edit = pre.edit();
         edit.putBoolean("isLogout", false);
         edit.apply();
 
-        MyService myService = new MyService();
-        Intent myServiceIntent = new Intent(mContext.getApplicationContext(), myService.getClass());
-        if (!isMyServiceRunning(myService.getClass(), mContext)) {
-            mContext.startService(myServiceIntent);
+        DetectLocationChangeService detectLocationChangeService = new DetectLocationChangeService();
+        Intent serviceIntent = new Intent(mContext.getApplicationContext(), detectLocationChangeService.getClass());
+        if (!isMyServiceRunning(detectLocationChangeService.getClass(), mContext)) {
+            mContext.startService(serviceIntent);
         }
     }
 
-    public void stopMyService(Context mContext, boolean isLogout) {
+    public void stopDetectLocationChangeService(Context mContext, boolean isLogout) {
         SharedPreferences pre2 = mContext.getSharedPreferences("ServicesStatus", MODE_PRIVATE);
         SharedPreferences.Editor edit2 = pre2.edit();
         edit2.putBoolean("isLogout", isLogout);
         edit2.apply();
 
-        MyService myService = new MyService();
-        Intent myServiceIntent = new Intent(mContext.getApplicationContext(), myService.getClass());
-        mContext.stopService(myServiceIntent);
+        DetectLocationChangeService detectLocationChangeService = new DetectLocationChangeService();
+        Intent serviceIntent = new Intent(mContext.getApplicationContext(), detectLocationChangeService.getClass());
+        if (isMyServiceRunning(detectLocationChangeService.getClass(), mContext)) {
+            mContext.stopService(serviceIntent);
+        }
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass, Context mContext) {
