@@ -27,7 +27,8 @@
             android:exported="true"
             android:label="RestartServiceWhenStopped">
             <intent-filter>
-                <action android:name="ac.in.ActivityRecognition.RestartSensor" />
+                <action android:name="com.github.duc010298.android.RestartSensor" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

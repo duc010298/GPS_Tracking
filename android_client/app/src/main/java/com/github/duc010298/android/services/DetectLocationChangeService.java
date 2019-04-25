@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 import com.github.duc010298.android.util.MyDatabaseHelper;
 
@@ -52,11 +50,8 @@ public class DetectLocationChangeService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        SharedPreferences pre = getSharedPreferences("ServicesStatus", MODE_PRIVATE);
-        if(!pre.getBoolean("isLogout", true)) {
-            Intent broadcastIntent = new Intent("ac.in.ActivityRecognition.RestartSensor");
-            sendBroadcast(broadcastIntent);
-        }
+        Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartSensor");
+        sendBroadcast(broadcastIntent);
 
         locationManager.removeUpdates(listener);
     }

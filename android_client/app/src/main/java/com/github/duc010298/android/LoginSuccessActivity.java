@@ -24,7 +24,7 @@ public class LoginSuccessActivity extends AppCompatActivity {
         edit.apply();
 
         ServicesHelper servicesHelper = new ServicesHelper();
-        servicesHelper.stopDetectLocationChangeService(this, true);
+        servicesHelper.stopDetectLocationChangeService(this, false);
 
         MyDatabaseHelper myDatabaseHelper = new MyDatabaseHelper(this);
         myDatabaseHelper.cleanDatabase();

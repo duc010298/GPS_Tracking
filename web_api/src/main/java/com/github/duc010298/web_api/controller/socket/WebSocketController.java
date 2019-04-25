@@ -1,4 +1,4 @@
-package com.github.duc010298.web_api.controller;
+package com.github.duc010298.web_api.controller.socket;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
