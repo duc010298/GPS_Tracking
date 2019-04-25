@@ -22,10 +22,10 @@ public class ServicesHelper {
     }
 
     public void stopDetectLocationChangeService(Context mContext, boolean isDetectLocationRun) {
-        SharedPreferences pre2 = mContext.getSharedPreferences("ServicesStatus", MODE_PRIVATE);
-        SharedPreferences.Editor edit2 = pre2.edit();
-        edit2.putBoolean("isDetectLocationRun", isDetectLocationRun);
-        edit2.apply();
+        SharedPreferences pre = mContext.getSharedPreferences("ServicesStatus", MODE_PRIVATE);
+        SharedPreferences.Editor edit = pre.edit();
+        edit.putBoolean("isDetectLocationRun", isDetectLocationRun);
+        edit.apply();
 
         DetectLocationChangeService detectLocationChangeService = new DetectLocationChangeService();
         Intent serviceIntent = new Intent(mContext.getApplicationContext(), detectLocationChangeService.getClass());
