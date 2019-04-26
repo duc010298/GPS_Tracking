@@ -15,7 +15,7 @@ public class RestartTrackingLocation extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences pre = context.getSharedPreferences("android_client", MODE_PRIVATE);
-        if(pre.getBoolean("isDetectLocationRun", false)) {
+        if(pre.getBoolean("isTrackingLocationRun", false)) {
             TrackingLocationService trackingLocationService = new TrackingLocationService();
             Intent serviceIntent = new Intent(context.getApplicationContext(), trackingLocationService.getClass());
             if (!ServicesHelper.isMyServiceRunning(trackingLocationService.getClass(), context)) {
