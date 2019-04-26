@@ -13,16 +13,17 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
-import com.github.duc010298.android.util.MyDatabaseHelper;
+import com.github.duc010298.android.helper.DatabaseHelper;
 
-public class DetectLocationChangeService extends Service {
+public class TrackingLocationService extends Service {
+
     private static final int TWO_MINUTES = 1000 * 60 * 2;
     private LocationManager locationManager;
     private MyLocationListener listener;
     private Location previousBestLocation = null;
-    private MyDatabaseHelper myDatabaseHelper;
+    private DatabaseHelper databaseHelper;
 
-    public DetectLocationChangeService() {
+    public TrackingLocationService() {
     }
 
     @Nullable
@@ -33,7 +34,7 @@ public class DetectLocationChangeService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        myDatabaseHelper = new MyDatabaseHelper(this);
+        databaseHelper = new DatabaseHelper(this);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         listener = new MyLocationListener();
@@ -41,8 +42,9 @@ public class DetectLocationChangeService extends Service {
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return START_STICKY;
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 300000, 10, listener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300000, 10, listener);
+        //10 minute and 10 meter
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 600000, 10, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 600000, 10, listener);
         return START_STICKY;
     }
 
@@ -50,12 +52,34 @@ public class DetectLocationChangeService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartSensor");
+        Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartTracking");
         sendBroadcast(broadcastIntent);
 
         locationManager.removeUpdates(listener);
     }
 
+    public class MyLocationListener implements LocationListener {
+        public void onLocationChanged(final Location loc) {
+            if (isBetterLocation(loc, previousBestLocation)) {
+                previousBestLocation = loc;
+                databaseHelper.addLocationHistory(loc);
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        public void onProviderDisabled(String provider) {
+
+        }
+
+
+        public void onProviderEnabled(String provider) {
+
+        }
+    }
 
     private boolean isBetterLocation(Location location, Location currentBestLocation) {
         if (currentBestLocation == null) {
@@ -100,32 +124,5 @@ public class DetectLocationChangeService extends Service {
             return provider2 == null;
         }
         return provider1.equals(provider2);
-    }
-
-    public class MyLocationListener implements LocationListener
-    {
-        public void onLocationChanged(final Location loc)
-        {
-            if(isBetterLocation(loc, previousBestLocation)) {
-                previousBestLocation = loc;
-                myDatabaseHelper.addLocationHistory(loc);
-            }
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        public void onProviderDisabled(String provider)
-        {
-
-        }
-
-
-        public void onProviderEnabled(String provider)
-        {
-
-        }
     }
 }

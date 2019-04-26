@@ -17,26 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <service
-            android:name=".services.DetectLocationChangeService"
-            android:enabled="true" />
-
-        <receiver
-            android:name=".SensorRestartBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:label="RestartServiceWhenStopped">
-            <intent-filter>
-                <action android:name="com.github.duc010298.android.RestartSensor" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
 
         <activity
-            android:name=".LoginSuccessActivity"
+            android:name=".activity.LoginSuccessActivity"
             android:noHistory="true" />
+
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.LoginActivity"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,6 +31,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".broadcast.RestartTrackingLocation"
+            android:enabled="true"
+            android:exported="true"
+            android:label="RestartServiceWhenStopped">
+            <intent-filter>
+                <action android:name="com.github.duc010298.android.RestartTracking" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".services.TrackingLocationService"
+            android:enabled="true" />
     </application>
 
 </manifest>

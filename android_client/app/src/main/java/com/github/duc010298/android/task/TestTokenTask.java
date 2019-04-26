@@ -1,14 +1,14 @@
-package com.github.duc010298.android.util;
+package com.github.duc010298.android.task;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.github.duc010298.android.LoginSuccessActivity;
+import com.github.duc010298.android.activity.LoginSuccessActivity;
+import com.github.duc010298.android.helper.ServicesHelper;
+import com.github.duc010298.android.helper.TokenHelper;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -17,15 +17,13 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import static android.content.Context.MODE_PRIVATE;
-
 public class TestTokenTask extends AsyncTask<String, String, String> {
-    private final Context mContext;
+    private final Context context;
     private ProgressDialog dialog;
 
     public TestTokenTask(Context context) {
-        this.mContext = context;
-        dialog = new ProgressDialog(mContext);
+        this.context = context;
+        dialog = new ProgressDialog(context);
     }
 
     @Override
@@ -49,17 +47,17 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
                 publishProgress("Token invalid or expired");
-                removeToken();
+                TokenHelper tokenHelper = new TokenHelper();
+                tokenHelper.cleanTokenOnMemory(context);
                 ServicesHelper servicesHelper = new ServicesHelper();
-                servicesHelper.stopDetectLocationChangeService(mContext, true);
+                servicesHelper.stopAllServices(context);
                 break tryToLogin;
             }
-            Log.i("responseCode", responseCode+ "");
             if (responseCode == HttpsURLConnection.HTTP_OK) {
                 String responseBody;
                 try(BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
                     String inputLine;
-                    StringBuffer response = new StringBuffer();
+                    StringBuilder response = new StringBuilder();
                     while ((inputLine = br.readLine()) != null) {
                         response.append(inputLine);
                     }
@@ -67,21 +65,20 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
                 }
                 if(responseBody.equals("Success")) {
                     publishProgress("Valid token, you are logged in");
-                    if (conn != null) {
-                        conn.disconnect();
-                    }
+                    conn.disconnect();
 
                     ServicesHelper servicesHelper = new ServicesHelper();
-                    servicesHelper.startDetectLocationChangeService(mContext);
+                    servicesHelper.startAllServices(context);
 
-                    Intent intent = new Intent(mContext, LoginSuccessActivity.class);
-                    mContext.startActivity(intent);
+                    Intent intent = new Intent(context, LoginSuccessActivity.class);
+                    context.startActivity(intent);
                     return null;
                 } else {
                     publishProgress("Token invalid or expired");
-                    removeToken();
+                    TokenHelper tokenHelper = new TokenHelper();
+                    tokenHelper.cleanTokenOnMemory(context);
                     ServicesHelper servicesHelper = new ServicesHelper();
-                    servicesHelper.stopDetectLocationChangeService(mContext, true);
+                    servicesHelper.stopAllServices(context);
                 }
             } else {
                 publishProgress("Login failed, cannot connect to server");
@@ -97,15 +94,8 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
         return null;
     }
 
-    private void removeToken() {
-        SharedPreferences pre = mContext.getSharedPreferences("SecretToken", MODE_PRIVATE);
-        SharedPreferences.Editor edit = pre.edit();
-        edit.putString("token", "");
-        edit.apply();
-    }
-
     protected void onProgressUpdate(String... params) {
-        Toast.makeText(mContext, params[0], Toast.LENGTH_LONG).show();
+        Toast.makeText(context, params[0], Toast.LENGTH_LONG).show();
     }
 
     protected void onPreExecute() {
@@ -120,5 +110,4 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
             dialog.dismiss();
         }
     }
-
 }

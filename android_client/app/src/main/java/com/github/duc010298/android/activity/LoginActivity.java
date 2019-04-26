@@ -1,23 +1,21 @@
-package com.github.duc010298.android;
+package com.github.duc010298.android.activity;
 
 import android.Manifest;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.github.duc010298.android.util.LoginTask;
-import com.github.duc010298.android.util.MyDatabaseHelper;
-import com.github.duc010298.android.util.TestTokenTask;
+import com.github.duc010298.android.R;
+import com.github.duc010298.android.helper.TokenHelper;
+import com.github.duc010298.android.task.LoginTask;
+import com.github.duc010298.android.task.TestTokenTask;
 
-
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private EditText txtUsername;
     private EditText txtPassword;
@@ -25,21 +23,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         checkPermission();
-
         connectView();
 
-        MyDatabaseHelper myDatabaseHelper = new MyDatabaseHelper(this);
-        int count = myDatabaseHelper.getCount();
-        Log.i("COUNT", "" + count);
-
-        String token = getTokenFromMemory();
+        TokenHelper tokenHelper = new TokenHelper();
+        String token = tokenHelper.getTokenFromMemory(this);
         if (token != null && !token.isEmpty()) {
             TestTokenTask testTokenTask = new TestTokenTask(this);
             testTokenTask.execute(token);
         }
+    }
+
+    private void connectView() {
+        txtUsername = findViewById(R.id.txtUser);
+        txtPassword = findViewById(R.id.txtPass);
+    }
+
+    public void doLogin(View view) {
+        String username = txtUsername.getText().toString().trim().toLowerCase();
+        String password = txtPassword.getText().toString().trim().toLowerCase();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Username and password cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        LoginTask loginTask = new LoginTask(this);
+        loginTask.execute(username, password);
     }
 
     @Override
@@ -80,28 +92,5 @@ public class MainActivity extends AppCompatActivity {
         if (!isHaveEnoughPermission) {
             ActivityCompat.requestPermissions(this, listPermission, 1);
         }
-    }
-
-    private void connectView() {
-        txtUsername = findViewById(R.id.txtUser);
-        txtPassword = findViewById(R.id.txtPass);
-    }
-
-    public void doLogin(View view) {
-        String username = txtUsername.getText().toString().trim().toLowerCase();
-        String password = txtPassword.getText().toString().trim().toLowerCase();
-
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Username and password cannot be empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        LoginTask loginTask = new LoginTask(this);
-        loginTask.execute(username, password);
-    }
-
-    private String getTokenFromMemory() {
-        SharedPreferences pre = getSharedPreferences("SecretToken", MODE_PRIVATE);
-        return pre.getString("token", null);
     }
 }

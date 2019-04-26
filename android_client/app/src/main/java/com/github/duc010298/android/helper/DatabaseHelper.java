@@ -1,17 +1,16 @@
-package com.github.duc010298.android.util;
+package com.github.duc010298.android.helper;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 
-public class MyDatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "GPS_Tracking";
     private static final int DATABASE_VERSION = 1;
 
-    public MyDatabaseHelper(Context context)  {
+    public DatabaseHelper(Context context)  {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -36,17 +35,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
         db.insert("Location_History", null, values);
         db.close();
-    }
-
-    public int getCount() {
-        String query = "SELECT * FROM Location_History";
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        int count = cursor.getCount();
-
-        cursor.close();
-        db.close();
-        return count;
     }
 
     public void cleanDatabase() {

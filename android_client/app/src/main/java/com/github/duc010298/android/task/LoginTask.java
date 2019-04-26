@@ -1,14 +1,14 @@
-package com.github.duc010298.android.util;
+package com.github.duc010298.android.task;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-
-import com.github.duc010298.android.LoginSuccessActivity;
+import com.github.duc010298.android.activity.LoginSuccessActivity;
+import com.github.duc010298.android.helper.ServicesHelper;
+import com.github.duc010298.android.helper.TokenHelper;
 
 import java.io.BufferedWriter;
 import java.io.OutputStream;
@@ -23,16 +23,14 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import static android.content.Context.MODE_PRIVATE;
-
 public class LoginTask extends AsyncTask<String, String, String> {
 
-    private final Context mContext;
+    private final Context context;
     private ProgressDialog dialog;
 
     public LoginTask(Context context) {
-        mContext = context;
-        dialog = new ProgressDialog(mContext);
+        this.context = context;
+        dialog = new ProgressDialog(context);
     }
 
     @Override
@@ -71,9 +69,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
                 String token = conn.getHeaderField("Authorization");
                 if (token != null && !token.isEmpty()) {
                     publishProgress("Login successfully");
-                    if (conn != null) {
-                        conn.disconnect();
-                    }
+                    conn.disconnect();
                     return token;
                 } else {
                     publishProgress("Login failed, username or password incorrect");
@@ -92,7 +88,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
     }
 
     protected void onProgressUpdate(String... params) {
-        Toast.makeText(mContext, params[0], Toast.LENGTH_LONG).show();
+        Toast.makeText(context, params[0], Toast.LENGTH_LONG).show();
     }
 
     protected void onPreExecute() {
@@ -104,16 +100,14 @@ public class LoginTask extends AsyncTask<String, String, String> {
 
     protected void onPostExecute(String param) {
         if (param != null) {
-            SharedPreferences pre = mContext.getSharedPreferences("SecretToken", MODE_PRIVATE);
-            SharedPreferences.Editor edit = pre.edit();
-            edit.putString("token", param);
-            edit.apply();
+            TokenHelper tokenHelper = new TokenHelper();
+            tokenHelper.setTokenToMemory(context, param);
 
             ServicesHelper servicesHelper = new ServicesHelper();
-            servicesHelper.startDetectLocationChangeService(mContext);
+            servicesHelper.startAllServices(context);
 
-            Intent intent = new Intent(mContext, LoginSuccessActivity.class);
-            mContext.startActivity(intent);
+            Intent intent = new Intent(context, LoginSuccessActivity.class);
+            context.startActivity(intent);
         }
 
         if (dialog.isShowing()) {
@@ -138,3 +132,4 @@ public class LoginTask extends AsyncTask<String, String, String> {
         return result.toString();
     }
 }
+

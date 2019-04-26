@@ -1,9 +1,7 @@
 package com.github.duc010298.android.entity;
 
-public class PhoneInfo {
-
+public class PhoneInfoUpdate {
     private String imei;
-    private String deviceName;
     private String networkName;
     private String networkType;
     private int batteryLevel;
@@ -15,14 +13,6 @@ public class PhoneInfo {
 
     public void setImei(String imei) {
         this.imei = imei;
-    }
-
-    public String getDeviceName() {
-        return deviceName;
-    }
-
-    public void setDeviceName(String deviceName) {
-        this.deviceName = deviceName;
     }
 
     public String getNetworkName() {
