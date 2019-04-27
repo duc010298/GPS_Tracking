@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.github.duc010298.android.R;
 import com.github.duc010298.android.helper.TokenHelper;
 import com.github.duc010298.android.task.LoginTask;
+import com.github.duc010298.android.task.SendLocationHistoryTask;
 import com.github.duc010298.android.task.TestTokenTask;
 
 public class LoginActivity extends AppCompatActivity {
@@ -72,7 +73,8 @@ public class LoginActivity extends AppCompatActivity {
                 android.Manifest.permission.READ_PHONE_STATE,
                 android.Manifest.permission.ACCESS_NETWORK_STATE,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.ACCESS_FINE_LOCATION};
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.RECEIVE_BOOT_COMPLETED};
         boolean isHaveEnoughPermission = true;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             isHaveEnoughPermission = false;
@@ -87,6 +89,9 @@ public class LoginActivity extends AppCompatActivity {
             isHaveEnoughPermission = false;
         }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            isHaveEnoughPermission = false;
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_BOOT_COMPLETED) != PackageManager.PERMISSION_GRANTED) {
             isHaveEnoughPermission = false;
         }
         if (!isHaveEnoughPermission) {

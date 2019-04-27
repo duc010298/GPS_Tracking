@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.github.duc010298.android.activity.LoginSuccessActivity;
+import com.github.duc010298.android.helper.ConfigHelper;
 import com.github.duc010298.android.helper.ServicesHelper;
 import com.github.duc010298.android.helper.TokenHelper;
 
@@ -34,7 +35,7 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
 
         tryToLogin:
         try {
-            String urlLogin = "http://10.20.30.74:8080/TestToken";
+            String urlLogin = ConfigHelper.getConfigValue(context, "api_url") + "/TestToken";
             URL url = new URL(urlLogin);
 
             conn = (HttpURLConnection) url.openConnection();
@@ -42,7 +43,6 @@ public class TestTokenTask extends AsyncTask<String, String, String> {
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
             conn.setConnectTimeout(10000);
-
 
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {

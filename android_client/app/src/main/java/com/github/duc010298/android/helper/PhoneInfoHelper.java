@@ -20,6 +20,15 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class PhoneInfoHelper {
 
+    public String getImei(Context context) {
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
+        @SuppressLint("HardwareIds") String imei = telephonyManager.getDeviceId();
+        return imei;
+    }
+
     public PhoneInfoRegister getInfoRegister(Context context) {
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
