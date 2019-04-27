@@ -13,7 +13,6 @@ import android.widget.Toast;
 import com.github.duc010298.android.R;
 import com.github.duc010298.android.helper.TokenHelper;
 import com.github.duc010298.android.task.LoginTask;
-import com.github.duc010298.android.task.SendLocationHistoryTask;
 import com.github.duc010298.android.task.TestTokenTask;
 
 public class LoginActivity extends AppCompatActivity {

@@ -1,6 +1,5 @@
 package com.github.duc010298.android.broadcast;
 
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

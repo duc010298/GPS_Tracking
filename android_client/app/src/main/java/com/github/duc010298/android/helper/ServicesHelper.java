@@ -1,15 +1,22 @@
 package com.github.duc010298.android.helper;
 
 import android.app.ActivityManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
+import com.github.duc010298.android.services.ScheduleSendLocationHistory;
 import com.github.duc010298.android.services.TrackingLocationService;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class ServicesHelper {
+    private static final int JOB_ID = 100;
+
     public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -20,7 +27,7 @@ public class ServicesHelper {
         return false;
     }
 
-    public void startTrackingLocationService(Context context) {
+    private void startTrackingLocationService(Context context) {
         SharedPreferences pre = context.getSharedPreferences("android_client", MODE_PRIVATE);
         SharedPreferences.Editor edit = pre.edit();
         edit.putBoolean("isTrackingLocationRun", true);
@@ -30,7 +37,7 @@ public class ServicesHelper {
         context.sendBroadcast(broadcastIntent);
     }
 
-    public void stopTrackingLocationService(Context context) {
+    private void stopTrackingLocationService(Context context) {
         SharedPreferences pre = context.getSharedPreferences("android_client", MODE_PRIVATE);
         SharedPreferences.Editor edit = pre.edit();
         edit.putBoolean("isTrackingLocationRun", false);
@@ -43,11 +50,45 @@ public class ServicesHelper {
         }
     }
 
+    private void startJobServiceSendLocationHistory(Context context) {
+        SharedPreferences pre = context.getSharedPreferences("android_client", MODE_PRIVATE);
+
+        if(pre.getBoolean("isJobServiceSendLocationHistoryRun", true)) {
+            SharedPreferences.Editor edit = pre.edit();
+            edit.putBoolean("isJobServiceSendLocationHistoryRun", false);
+            edit.apply();
+            ComponentName componentName = new ComponentName(context, ScheduleSendLocationHistory.class);
+            JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, componentName);
+
+            //TODO update here
+            builder
+                    .setPeriodic(960000)
+                    .setPersisted(true);
+
+
+            JobInfo jobInfo = builder.build();
+            JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+            jobScheduler.schedule(jobInfo);
+        }
+    }
+
+    private void stopJobServiceSendLocationHistory(Context context) {
+        SharedPreferences pre = context.getSharedPreferences("android_client", MODE_PRIVATE);
+        SharedPreferences.Editor edit = pre.edit();
+        edit.putBoolean("isJobServiceSendLocationHistoryRun", true);
+        edit.apply();
+        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.cancelAll();
+    }
+
     public void startAllServices(Context context) {
         startTrackingLocationService(context);
+        startJobServiceSendLocationHistory(context);
     }
 
     public void stopAllServices(Context context) {
         stopTrackingLocationService(context);
+        stopJobServiceSendLocationHistory(context);
     }
 }

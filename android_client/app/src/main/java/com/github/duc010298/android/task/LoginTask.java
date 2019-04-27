@@ -76,6 +76,8 @@ public class LoginTask extends AsyncTask<String, String, String> {
                 if (token != null && !token.isEmpty()) {
                     publishProgress("Login successfully");
                     conn.disconnect();
+
+                    //Register if new device on server
                     PhoneInfoRegister phoneInfoRegister = new PhoneInfoHelper().getInfoRegister(context);
                     String urlRegister = ConfigHelper.getConfigValue(context, "api_url") + "/registerDevice";
                     Gson gson = new Gson();
