@@ -2,6 +2,7 @@ package com.github.duc010298.web_api.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.*;
 
@@ -15,7 +16,7 @@ import javax.persistence.*;
 @NamedQuery(name="LocationHistory.findAll", query="SELECT l FROM LocationHistory l")
 public class LocationHistory implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private String locationId;
+	private UUID locationId;
 	private double latitude;
 	private double longitude;
 	private Date timeTracking;
@@ -27,11 +28,11 @@ public class LocationHistory implements Serializable {
 
 	@Id
 	@Column(name="location_id")
-	public String getLocationId() {
+	public UUID getLocationId() {
 		return this.locationId;
 	}
 
-	public void setLocationId(String locationId) {
+	public void setLocationId(UUID locationId) {
 		this.locationId = locationId;
 	}
 
