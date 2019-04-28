@@ -110,4 +110,13 @@ public class SpringBootWebSocketClient extends WebSocketListener {
             if(topicHandler != null) topicHandler.onMessage(message);
         }
     }
+
+    public void sendMessageJson(String destination, String messageJson) {
+        StompMessage message = new StompMessage("SEND");
+        message.addHeader("content-type", "application/json");
+        message.addHeader("destination", destination);
+        if (authorizationToken != null) message.addHeader("Authorization", authorizationToken);
+        message.setContent(messageJson);
+        webSocket.send(StompMessageSerializer.serialize(message));
+    }
 }
