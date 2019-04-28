@@ -21,7 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query = "CREATE TABLE Location_History(time_tracking INTEGER, latitude REAL, longitude REAL)";
+        String query = "CREATE TABLE Location_History(time_tracking INTEGER, latitude TEXT, longitude TEXT)";
         db.execSQL(query);
     }
 
