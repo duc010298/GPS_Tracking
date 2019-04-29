@@ -7,7 +7,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.github.duc010298.android.entity.AndroidMessage;
 import com.github.duc010298.android.entity.ManagerMessage;
+import com.github.duc010298.android.entity.PhoneInfoUpdate;
 import com.github.duc010298.android.helper.ConfigHelper;
 import com.github.duc010298.android.helper.PhoneInfoHelper;
 import com.github.duc010298.android.helper.TokenHelper;
@@ -65,7 +67,7 @@ public class WebSocketService extends Service {
         initializeTimerTask();
 
         //schedule the timer, to wake up every 10 second
-        timer.schedule(reConnectTask, 30000);
+        timer.schedule(reConnectTask, 0, 30000);
     }
 
     private void initializeTimerTask() {
@@ -89,7 +91,19 @@ public class WebSocketService extends Service {
                             return;
                         }
 
-                        client.sendMessageJson("/app/android", gson.toJson("Test COnnecfsa   0002"));
+                        switch (managerMessage.getCommand()) {
+                            case "UPDATE_INFO":
+                                PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoHelper().getInfoUpdate(context);
+                                AndroidMessage androidMessage = new AndroidMessage();
+                                androidMessage.setImei(new PhoneInfoHelper().getImei(context));
+                                androidMessage.setCommand("UPDATE_INFO");
+                                androidMessage.setObject(phoneInfoUpdate);
+                                client.sendMessageJson("/app/android/request", gson.toJson(androidMessage));
+                                break;
+                            case "UPDATE_LOCATION":
+
+                                break;
+                        }
                     }
                 });
                 String socketUrl = ConfigHelper.getConfigValue(context, "socket_url");

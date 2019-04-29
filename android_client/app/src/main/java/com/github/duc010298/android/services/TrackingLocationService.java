@@ -46,8 +46,8 @@ public class TrackingLocationService extends Service {
         //TODO for test
 //        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 600000, 10, listener);
 //        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 600000, 10, listener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 0, listener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 300000, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300000, 0, listener);
         return START_STICKY;
     }
 

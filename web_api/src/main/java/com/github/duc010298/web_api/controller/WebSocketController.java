@@ -7,14 +7,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.github.duc010298.web_api.entity.AndroidMessage;
 import com.github.duc010298.web_api.entity.AppUser;
 import com.github.duc010298.web_api.entity.Device;
 import com.github.duc010298.web_api.entity.ManagerMessage;
+import com.github.duc010298.web_api.entity.PhoneInfoUpdate;
 import com.github.duc010298.web_api.repository.AppUserRepository;
 import com.github.duc010298.web_api.repository.DeviceRepository;
 
@@ -34,16 +33,6 @@ public class WebSocketController {
 		this.simpMessagingTemplate = simpMessagingTemplate;
 	}
 	
-	@PostMapping("/testSocket")
-	public @ResponseBody String Test() {
-		System.out.println("Test call");
-		ManagerMessage managerMessage = new ManagerMessage();
-		managerMessage.setCommand("dadsad");
-		managerMessage.setImei("356060070359140");
-		simpMessagingTemplate.convertAndSendToUser("duc010298", "/topic/android", managerMessage);
-		return "Success";
-	}
-	
 	@MessageMapping("/manager")
     public void doCommandManager(@Payload ManagerMessage managerMessage) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -59,9 +48,24 @@ public class WebSocketController {
         simpMessagingTemplate.convertAndSendToUser(username, "/topic/android", managerMessage);
     }
 	
-	@MessageMapping("/android")
-	public void androidRequest(@Payload String message) {
-		System.out.println(message);
+	@MessageMapping("/android/request")
+	public void androidRequest(@Payload AndroidMessage androidMessage) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = (String) auth.getPrincipal();
+		
+		String imei = androidMessage.getImei();
+		
+		if(checkUserOwnsDevice(username, imei) ) {
+			//nothing to do here
+			return;
+		}
+		
+		String command = androidMessage.getCommand();
+		switch (command) {
+			case "UPDATE_INFO":
+				simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", (PhoneInfoUpdate) androidMessage.getObject());
+				break;
+		}
 	}
 	
 	private boolean checkUserOwnsDevice(String username, String imei) {

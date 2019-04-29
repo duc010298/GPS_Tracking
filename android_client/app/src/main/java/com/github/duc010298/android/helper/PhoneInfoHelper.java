@@ -21,12 +21,8 @@ import static android.content.Context.MODE_PRIVATE;
 public class PhoneInfoHelper {
 
     public String getImei(Context context) {
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            return null;
-        }
-        @SuppressLint("HardwareIds") String imei = telephonyManager.getDeviceId();
-        return imei;
+        SharedPreferences pre = context.getSharedPreferences("android_client", MODE_PRIVATE);
+        return pre.getString("imei_device", "");
     }
 
     public PhoneInfoRegister getInfoRegister(Context context) {
@@ -64,7 +60,6 @@ public class PhoneInfoHelper {
                 || plugged == BatteryManager.BATTERY_PLUGGED_WIRELESS);
 
         PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoUpdate();
-        phoneInfoUpdate.setImei(imei);
         phoneInfoUpdate.setNetworkName(networkName);
         phoneInfoUpdate.setNetworkType(networkType);
         phoneInfoUpdate.setBatteryLevel(batteryLevel);
