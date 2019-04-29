@@ -58,6 +58,8 @@ public class WebSocketService extends Service {
 
         Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartTracking");
         sendBroadcast(broadcastIntent);
+
+        stopTimerTask();
     }
 
     private void startTimer() {
@@ -67,7 +69,7 @@ public class WebSocketService extends Service {
         initializeTimerTask();
 
         //schedule the timer, to wake up every 10 second
-        timer.schedule(reConnectTask, 0, 30000);
+        timer.schedule(reConnectTask, 10000);
     }
 
     private void initializeTimerTask() {
