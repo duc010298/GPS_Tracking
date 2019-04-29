@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using WebSocketSharp;
+using winform_client.entity;
 using winform_client.Stomp;
 
 namespace winform_client
@@ -18,7 +20,7 @@ namespace winform_client
         public MainForm()
         {
             InitializeComponent();
-            ws = new WebSocket(ConfigurationManager.AppSettings["api-url"]);
+            ws = new WebSocket(ConfigurationManager.AppSettings["socket-url"]);
             serializer = new StompMessageSerializer();
 
             ws.OnMessage += ws_OnMessage;
@@ -37,7 +39,7 @@ namespace winform_client
 
             var sub = new StompMessage("SUBSCRIBE");
             sub["id"] = clientId;
-            sub["destination"] = "/user//topic/manager";
+            sub["destination"] = "/user/topic/manager";
             ws.Send(serializer.Serialize(sub));
         }
 
@@ -75,7 +77,15 @@ namespace winform_client
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            CustomAppMessage custom = new CustomAppMessage();
+            custom.command = "GET_DEVICE_LIST";
 
+            string json = JsonConvert.SerializeObject(custom);
+
+            var broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
         }
 
         public string RandomString(int length)
@@ -93,7 +103,8 @@ namespace winform_client
 
         void ws_OnMessage(object sender, MessageEventArgs e)
         {
-
+            String json = e.Data;
+            Console.WriteLine(json);
         }
 
         void ws_OnClose(object sender, CloseEventArgs e)

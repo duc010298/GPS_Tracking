@@ -1,4 +1,4 @@
-package com.github.duc010298.web_api.entity;
+package com.github.duc010298.web_api.entity.httpEntity;
 
 public class LocationRequest {
 	private long time;

@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="entity\CustomAppMessage.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,10 +72,12 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="entity\ManagerMessage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StaticToken.cs" />
+    <Compile Include="Stomp\StompCommand.cs" />
+    <Compile Include="Stomp\StompMessage.cs" />
+    <Compile Include="Stomp\StompMessageSerializer.cs" />
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -108,8 +111,6 @@
   <ItemGroup>
     <None Include="Resources\refresh1.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Stomp\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

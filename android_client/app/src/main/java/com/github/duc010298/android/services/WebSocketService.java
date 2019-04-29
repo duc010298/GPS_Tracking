@@ -5,11 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.github.duc010298.android.entity.AndroidMessage;
-import com.github.duc010298.android.entity.ManagerMessage;
-import com.github.duc010298.android.entity.PhoneInfoUpdate;
+import com.github.duc010298.android.entity.socket.CustomAppMessage;
 import com.github.duc010298.android.helper.ConfigHelper;
 import com.github.duc010298.android.helper.PhoneInfoHelper;
 import com.github.duc010298.android.helper.TokenHelper;
@@ -88,24 +85,24 @@ public class WebSocketService extends Service {
                     @Override
                     public void onMessage(StompMessage message) {
                         Gson gson = new Gson();
-                        ManagerMessage managerMessage = gson.fromJson(message.getContent(), ManagerMessage.class);
-                        if(!managerMessage.getImei().equals(new PhoneInfoHelper().getImei(context))) {
+                        CustomAppMessage customAppMessage = gson.fromJson(message.getContent(), CustomAppMessage.class);
+                        if(!customAppMessage.getSendToImei().equals(new PhoneInfoHelper().getImei(context))) {
                             return;
                         }
-
-                        switch (managerMessage.getCommand()) {
-                            case "UPDATE_INFO":
-                                PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoHelper().getInfoUpdate(context);
-                                AndroidMessage androidMessage = new AndroidMessage();
-                                androidMessage.setImei(new PhoneInfoHelper().getImei(context));
-                                androidMessage.setCommand("UPDATE_INFO");
-                                androidMessage.setObject(phoneInfoUpdate);
-                                client.sendMessageJson("/app/android/request", gson.toJson(androidMessage));
-                                break;
-                            case "UPDATE_LOCATION":
-
-                                break;
-                        }
+//
+//                        switch (managerMessage.getCommand()) {
+//                            case "UPDATE_INFO":
+//                                PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoHelper().getInfoUpdate(context);
+//                                AndroidMessage androidMessage = new AndroidMessage();
+//                                androidMessage.setImei(new PhoneInfoHelper().getImei(context));
+//                                androidMessage.setCommand("UPDATE_INFO");
+//                                androidMessage.setObject(phoneInfoUpdate);
+//                                client.sendMessageJson("/app/android/request", gson.toJson(androidMessage));
+//                                break;
+//                            case "UPDATE_LOCATION":
+//
+//                                break;
+//                        }
                     }
                 });
                 String socketUrl = ConfigHelper.getConfigValue(context, "socket_url");

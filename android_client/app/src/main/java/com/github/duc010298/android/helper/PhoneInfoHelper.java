@@ -14,7 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 
 import com.github.duc010298.android.entity.PhoneInfoRegister;
-import com.github.duc010298.android.entity.PhoneInfoUpdate;
+import com.github.duc010298.android.entity.socket.PhoneInfoUpdate;
 
 import static android.content.Context.MODE_PRIVATE;
 

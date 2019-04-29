@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.duc010298.web_api.entity.AppUser;
 import com.github.duc010298.web_api.entity.Device;
-import com.github.duc010298.web_api.entity.PhoneInfoRegister;
+import com.github.duc010298.web_api.entity.httpEntity.PhoneInfoRegister;
 import com.github.duc010298.web_api.repository.AppUserRepository;
 import com.github.duc010298.web_api.repository.DeviceRepository;
 

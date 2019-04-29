@@ -1,19 +1,21 @@
 package com.github.duc010298.web_api.controller;
 
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.github.duc010298.web_api.entity.AndroidMessage;
 import com.github.duc010298.web_api.entity.AppUser;
 import com.github.duc010298.web_api.entity.Device;
-import com.github.duc010298.web_api.entity.ManagerMessage;
-import com.github.duc010298.web_api.entity.PhoneInfoUpdate;
+import com.github.duc010298.web_api.entity.socket.CustomAppMessage;
+import com.github.duc010298.web_api.entity.socket.JsonDevice;
+import com.github.duc010298.web_api.entity.socket.PhoneInfoUpdate;
 import com.github.duc010298.web_api.repository.AppUserRepository;
 import com.github.duc010298.web_api.repository.DeviceRepository;
 
@@ -34,38 +36,54 @@ public class WebSocketController {
 	}
 	
 	@MessageMapping("/manager")
-    public void doCommandManager(@Payload ManagerMessage managerMessage) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String) auth.getPrincipal();
+    public void doCommandManager(@Payload CustomAppMessage customAppMessage, Principal principal) {
+		//Winform send request to server
 		
-		String imei = managerMessage.getImei();
+		String username = principal.getName();
+		
+		if(customAppMessage.getCommand().equals("GET_DEVICE_LIST")) {
+			AppUser appUser = appUserRepository.findByUserName(username);
+			List<Device> devices = deviceRepository.findAllByAppUser(appUser);
+			List<JsonDevice> jsonDevices = new ArrayList<JsonDevice>();
+			
+			for(Device d: devices) {
+				JsonDevice jsonDevice = new JsonDevice();
+				jsonDevice.setDeviceName(d.getDeviceName());
+				jsonDevice.setImei(d.getImei());
+				jsonDevice.setIsOnline(d.getIsOnline());
+				jsonDevice.setLastOnline(d.getLastOnline());
+				jsonDevices.add(jsonDevice);
+			}
+			
+			CustomAppMessage custom = new CustomAppMessage();
+			custom.setCommand("GET_DEVICE_LIST");
+			custom.setContent(jsonDevices);
+			simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", custom);
+			return;
+		}
+		
+		String imei = customAppMessage.getSendToImei();
 		
 		if(checkUserOwnsDevice(username, imei) ) {
 			//TODO notify for manager
 			return;
 		}
 		
-        simpMessagingTemplate.convertAndSendToUser(username, "/topic/android", managerMessage);
+        simpMessagingTemplate.convertAndSendToUser(username, "/topic/android", customAppMessage);
     }
 	
 	@MessageMapping("/android/request")
-	public void androidRequest(@Payload AndroidMessage androidMessage) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String) auth.getPrincipal();
+	public void androidRequest(@Payload CustomAppMessage customAppMessage, Principal principal) {
+		//Android send request to server
+		String username = principal.getName();
 		
-		String imei = androidMessage.getImei();
+		String imei = customAppMessage.getSendToImei();
 		
 		if(checkUserOwnsDevice(username, imei) ) {
 			//nothing to do here
 			return;
 		}
-		
-		String command = androidMessage.getCommand();
-		switch (command) {
-			case "UPDATE_INFO":
-				simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", (PhoneInfoUpdate) androidMessage.getObject());
-				break;
-		}
+		simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", customAppMessage);
 	}
 	
 	private boolean checkUserOwnsDevice(String username, String imei) {

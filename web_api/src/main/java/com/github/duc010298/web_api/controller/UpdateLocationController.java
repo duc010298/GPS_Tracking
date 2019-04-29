@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.duc010298.web_api.entity.Device;
 import com.github.duc010298.web_api.entity.LocationHistory;
-import com.github.duc010298.web_api.entity.LocationRequest;
-import com.github.duc010298.web_api.entity.UpdateLocationRequest;
+import com.github.duc010298.web_api.entity.httpEntity.LocationRequest;
+import com.github.duc010298.web_api.entity.httpEntity.UpdateLocationRequest;
 import com.github.duc010298.web_api.repository.DeviceRepository;
 import com.github.duc010298.web_api.repository.LocationHistoryRepository;
 

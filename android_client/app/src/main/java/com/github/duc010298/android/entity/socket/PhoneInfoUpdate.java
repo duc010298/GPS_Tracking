@@ -1,19 +1,10 @@
-package com.github.duc010298.web_api.entity;
+package com.github.duc010298.android.entity.socket;
 
 public class PhoneInfoUpdate {
-    private String imei;
     private String networkName;
     private String networkType;
     private int batteryLevel;
     private boolean isCharging;
-
-    public String getImei() {
-        return imei;
-    }
-
-    public void setImei(String imei) {
-        this.imei = imei;
-    }
 
     public String getNetworkName() {
         return networkName;
