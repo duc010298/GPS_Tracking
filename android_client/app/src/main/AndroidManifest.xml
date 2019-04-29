@@ -44,8 +44,23 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".broadcast.RestartWebSocketListen"
+            android:enabled="true"
+            android:exported="true"
+            android:label="RestartServiceWebSocketWhenStopped">
+            <intent-filter>
+                <action android:name="com.github.duc010298.android.RestartWebSocket" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".services.TrackingLocationService"
+            android:enabled="true" />
+
+        <service
+            android:name=".services.WebSocketService"
             android:enabled="true" />
 
         <service

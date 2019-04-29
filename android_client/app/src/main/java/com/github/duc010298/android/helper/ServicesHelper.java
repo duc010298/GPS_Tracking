@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.github.duc010298.android.services.ScheduleSendLocationHistory;
 import com.github.duc010298.android.services.TrackingLocationService;
+import com.github.duc010298.android.services.WebSocketService;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -82,13 +83,38 @@ public class ServicesHelper {
         jobScheduler.cancelAll();
     }
 
+    private void startWebSocketService(Context context) {
+        SharedPreferences pre = context.getSharedPreferences("android_client", MODE_PRIVATE);
+        SharedPreferences.Editor edit = pre.edit();
+        edit.putBoolean("isWebSocketRun", true);
+        edit.apply();
+
+        Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartWebSocket");
+        context.sendBroadcast(broadcastIntent);
+    }
+
+    private void stopWebSocketService(Context context) {
+        SharedPreferences pre = context.getSharedPreferences("android_client", MODE_PRIVATE);
+        SharedPreferences.Editor edit = pre.edit();
+        edit.putBoolean("isWebSocketRun", false);
+        edit.apply();
+
+        WebSocketService webSocketService = new WebSocketService();
+        Intent serviceIntent = new Intent(context.getApplicationContext(), webSocketService.getClass());
+        if (isMyServiceRunning(webSocketService.getClass(), context)) {
+            context.stopService(serviceIntent);
+        }
+    }
+
     public void startAllServices(Context context) {
         startTrackingLocationService(context);
         startJobServiceSendLocationHistory(context);
+        startWebSocketService(context);
     }
 
     public void stopAllServices(Context context) {
         stopTrackingLocationService(context);
         stopJobServiceSendLocationHistory(context);
+        stopWebSocketService(context);
     }
 }
