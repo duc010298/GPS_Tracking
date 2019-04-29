@@ -121,6 +121,7 @@ public class WebSocketService extends Service {
         //stop the timer, if it's not already null
         if (timer != null) {
             timer.cancel();
+            timer.purge();
             timer = null;
         }
     }
