@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace winform_client
@@ -90,6 +85,28 @@ namespace winform_client
                 close();
             }
             Application.Run(new MainForm());
+        }
+
+        private void TextBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+            {
+                if(String.IsNullOrEmpty(textBox2.Text.Trim()))
+                {
+                    textBox2.Focus();
+                } else
+                {
+                    ButtonLogin_Click(sender, e);
+                }
+            }
+        }
+
+        private void TextBox2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+            {
+                ButtonLogin_Click(sender, e);
+            }
         }
     }
 }
