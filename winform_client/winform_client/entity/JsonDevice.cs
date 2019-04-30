@@ -10,7 +10,6 @@ namespace winform_client.entity
     {
         public string imei { get; set; }
         public string deviceName { get; set; }
-        public bool isOnline { get; set; }
-        public DateTime lastOnline { get; set; }
+        public DateTime lastUpdate { get; set; }
     }
 }

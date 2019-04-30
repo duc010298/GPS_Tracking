@@ -139,14 +139,8 @@ namespace winform_client
         {
             listBox1.Items.Clear();
             foreach (JsonDevice jsonDevice in jsonDevices) {
-                string str = jsonDevice.deviceName + " | " + jsonDevice.imei + " | ";
-                if (jsonDevice.isOnline)
-                {
-                    str += "Online";
-                } else
-                {
-                    str += jsonDevice.lastOnline.ToString("dd/MM/yy HH:mm:ss");
-                }
+                string str = jsonDevice.deviceName + " | " + jsonDevice.imei + " | " + 
+                    jsonDevice.lastUpdate.ToString("dd/MM/yy HH:mm:ss");
                 listBox1.Items.Add(str);
             }
         }
