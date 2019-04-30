@@ -150,5 +150,10 @@ namespace winform_client
                 listBox1.Items.Add(str);
             }
         }
+
+        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("ItemClick");
+        }
     }
 }
