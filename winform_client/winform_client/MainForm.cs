@@ -1,7 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using GMap.NET;
+using GMap.NET.WindowsForms;
+using GMap.NET.WindowsForms.Markers;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -17,10 +21,14 @@ namespace winform_client
         private readonly StompMessageSerializer serializer;
         private readonly string clientId;
         private ArrayList locationHistories;
+        private readonly GMapOverlay markersOverlay;
+        private bool showOnlyCurrentLocation;
 
         public MainForm()
         {
             InitializeComponent();
+            markersOverlay = new GMapOverlay("marker");
+            showOnlyCurrentLocation = true;
 
             ws = new WebSocket(ConfigurationManager.AppSettings["socket-url"]);
             serializer = new StompMessageSerializer();
@@ -156,8 +164,7 @@ namespace winform_client
             listBox1.Items.Clear();
             foreach (JsonDevice jsonDevice in jsonDevices)
             {
-                string str = jsonDevice.deviceName + " | " + jsonDevice.imei + " | " +
-                    jsonDevice.lastUpdate.ToString("dd/MM/yy HH:mm:ss");
+                string str = jsonDevice.deviceName + " | " + jsonDevice.imei;
                 listBox1.Items.Add(str);
             }
         }
@@ -216,8 +223,13 @@ namespace winform_client
                     locationHistories.Add(jsonLocationHistory);
                 }
             }
-            Console.WriteLine(locationHistories.Count);
-            //TODO draw map
+            if(showOnlyCurrentLocation)
+            {
+                MarkedLastLocation();
+            } else
+            {
+                //TODO route here;
+            }
         }
 
         void ws_OnClose(object sender, CloseEventArgs e)
@@ -231,13 +243,14 @@ namespace winform_client
 
         private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            CleanGmap();
             string data = listBox1.GetItemText(listBox1.SelectedItem);
             if (String.IsNullOrEmpty(data)) return;
             string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
 
             txtDeviceName.Text = arrayValue[0];
             txtImei.Text = arrayValue[1];
-            txtLastUpdate.Text = arrayValue[2];
+            txtLastUpdate.Text = "Unknown";
             txtNetworkName.Text = "Unknown";
             txtNetworkType.Text = "Unknown";
             txtBatteryLevel.Text = "Unknown";
@@ -302,6 +315,61 @@ namespace winform_client
             {
                 ListBox1_SelectedIndexChanged(sender, e);
             }
+        }
+
+        private void CleanGmap()
+        {
+            gMap.Zoom = 0;
+            markersOverlay.Markers.Clear();
+        }
+
+        private void MarkedLastLocation()
+        {
+            if (locationHistories.Count == 0) return;
+            InitGmap();
+            JsonLocationHistory locationHistory = (JsonLocationHistory) locationHistories[0];
+            gMap.Position = new GMap.NET.PointLatLng(locationHistory.latitude, locationHistory.longitude);
+            GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(locationHistory.latitude, locationHistory.longitude), GMarkerGoogleType.red)
+            {
+                ToolTipText = locationHistory.timeTracking.ToString("dd/MM/yy HH:mm:ss")
+            };
+            markersOverlay.Markers.Add(marker);
+            gMap.Overlays.Add(markersOverlay);
+        }
+
+        private void InitGmap()
+        {
+            gMap.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
+            GMaps.Instance.Mode = AccessMode.ServerOnly;
+            gMap.ShowCenter = false;
+            gMap.Zoom = 15;
+            gMap.DragButton = MouseButtons.Left;
+        }
+
+        private void GMap_OnMarkerClick(GMapMarker item, MouseEventArgs e)
+        {
+            double latitude = item.Position.Lat;
+            double longitude = item.Position.Lng;
+            System.Diagnostics.Process.Start("https://www.google.com/maps/search/?api=1&query=" + 
+                latitude.ToString("G", CultureInfo.InvariantCulture) + "," + longitude.ToString("G", CultureInfo.InvariantCulture));
+        }
+
+        private void CurrentLocationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentLocationToolStripMenuItem.Checked = true;
+            routesToolStripMenuItem.Checked = false;
+            showOnlyCurrentLocation = true;
+            CleanGmap();
+            MarkedLastLocation();
+        }
+
+        private void RoutesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentLocationToolStripMenuItem.Checked = false;
+            routesToolStripMenuItem.Checked = true;
+            showOnlyCurrentLocation = false;
+            CleanGmap();
+            //TODO route here
         }
     }
 }
