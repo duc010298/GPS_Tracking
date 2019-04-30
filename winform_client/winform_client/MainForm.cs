@@ -16,6 +16,7 @@ namespace winform_client
         private readonly WebSocket ws;
         private readonly StompMessageSerializer serializer;
         private readonly string clientId;
+        private ArrayList locationHistories;
 
         public MainForm()
         {
@@ -42,6 +43,14 @@ namespace winform_client
             sub["id"] = clientId;
             sub["destination"] = "/user/topic/manager";
             ws.Send(serializer.Serialize(sub));
+        }
+
+        public string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         private void LogoutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -97,14 +106,6 @@ namespace winform_client
             Button1_Click(sender, e);
         }
 
-        public string RandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            return new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
         void ws_OnOpen(object sender, EventArgs e)
         {
 
@@ -130,6 +131,9 @@ namespace winform_client
                         case "LOCATION_UPDATED":
                             LocationUpdated(customAppMessage);
                             break;
+                        case "GET_LOCATION":
+                            GetLocation(customAppMessage);
+                            break;
                     }
                 }
             });
@@ -147,10 +151,22 @@ namespace winform_client
             processAddListDevice(jsonDevices);
         }
 
+        private void processAddListDevice(ArrayList jsonDevices)
+        {
+            listBox1.Items.Clear();
+            foreach (JsonDevice jsonDevice in jsonDevices)
+            {
+                string str = jsonDevice.deviceName + " | " + jsonDevice.imei + " | " +
+                    jsonDevice.lastUpdate.ToString("dd/MM/yy HH:mm:ss");
+                listBox1.Items.Add(str);
+            }
+        }
+
         private void UpdateInfo(CustomAppMessage customAppMessage)
         {
             string imei = customAppMessage.imei;
             string data = listBox1.GetItemText(listBox1.SelectedItem);
+            if (String.IsNullOrEmpty(data)) return;
             string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
             if (imei.Equals(arrayValue[1]))
             {
@@ -166,6 +182,7 @@ namespace winform_client
         {
             string imei = customAppMessage.imei;
             string data = listBox1.GetItemText(listBox1.SelectedItem);
+            if (String.IsNullOrEmpty(data)) return;
             string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
             if (imei.Equals(arrayValue[1]))
             {
@@ -183,6 +200,26 @@ namespace winform_client
             }
         }
 
+        private void GetLocation(CustomAppMessage customAppMessage)
+        {
+            locationHistories = new ArrayList();
+            string imei = customAppMessage.imei;
+            string data = listBox1.GetItemText(listBox1.SelectedItem);
+            if (String.IsNullOrEmpty(data)) return;
+            string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
+            if (imei.Equals(arrayValue[1]))
+            {
+                ArrayList arrayList = JsonConvert.DeserializeObject<ArrayList>(customAppMessage.content.ToString());
+                foreach (var item in arrayList)
+                {
+                    JsonLocationHistory jsonLocationHistory = JsonConvert.DeserializeObject<JsonLocationHistory>(item.ToString());
+                    locationHistories.Add(jsonLocationHistory);
+                }
+            }
+            Console.WriteLine(locationHistories.Count);
+            //TODO draw map
+        }
+
         void ws_OnClose(object sender, CloseEventArgs e)
         {
 
@@ -192,19 +229,10 @@ namespace winform_client
             
         }
 
-        private void processAddListDevice(ArrayList jsonDevices)
-        {
-            listBox1.Items.Clear();
-            foreach (JsonDevice jsonDevice in jsonDevices) {
-                string str = jsonDevice.deviceName + " | " + jsonDevice.imei + " | " + 
-                    jsonDevice.lastUpdate.ToString("dd/MM/yy HH:mm:ss");
-                listBox1.Items.Add(str);
-            }
-        }
-
         private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             string data = listBox1.GetItemText(listBox1.SelectedItem);
+            if (String.IsNullOrEmpty(data)) return;
             string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
 
             txtDeviceName.Text = arrayValue[0];
@@ -216,9 +244,20 @@ namespace winform_client
             txtCharging.Text = "Unknown";
 
             //Update info
+            UpdateInfo(arrayValue[1]);
+
+            //Update location to server
+            CallUpdateLocationToServer(arrayValue[1]);
+
+            //Get location
+            GetLocation(arrayValue[1]);
+        }
+
+        private void UpdateInfo(string imei)
+        {
             CustomAppMessage appMessage = new CustomAppMessage();
             appMessage.command = "UPDATE_INFO";
-            appMessage.imei = arrayValue[1];
+            appMessage.imei = imei;
 
             string json = JsonConvert.SerializeObject(appMessage);
 
@@ -226,27 +265,31 @@ namespace winform_client
             broad["content-type"] = "application/json";
             broad["destination"] = "/app/manager";
             ws.Send(serializer.Serialize(broad));
+        }
 
-            //Update location to server
-            appMessage = new CustomAppMessage();
+        private void CallUpdateLocationToServer(string imei)
+        {
+            CustomAppMessage appMessage = new CustomAppMessage();
             appMessage.command = "UPDATE_LOCATION";
-            appMessage.imei = arrayValue[1];
+            appMessage.imei = imei;
 
-            json = JsonConvert.SerializeObject(appMessage);
+            string json = JsonConvert.SerializeObject(appMessage);
 
-            broad = new StompMessage("SEND", json);
+            var broad = new StompMessage("SEND", json);
             broad["content-type"] = "application/json";
             broad["destination"] = "/app/manager";
             ws.Send(serializer.Serialize(broad));
+        }
 
-            //Get location
-            appMessage = new CustomAppMessage();
+        private void GetLocation(string imei)
+        {
+            CustomAppMessage appMessage = new CustomAppMessage();
             appMessage.command = "GET_LOCATION";
-            appMessage.imei = arrayValue[1];
+            appMessage.imei = imei;
 
-            json = JsonConvert.SerializeObject(appMessage);
+            string json = JsonConvert.SerializeObject(appMessage);
 
-            broad = new StompMessage("SEND", json);
+            var broad = new StompMessage("SEND", json);
             broad["content-type"] = "application/json";
             broad["destination"] = "/app/manager";
             ws.Send(serializer.Serialize(broad));

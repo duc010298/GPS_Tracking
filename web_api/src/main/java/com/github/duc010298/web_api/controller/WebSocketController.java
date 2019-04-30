@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.github.duc010298.web_api.entity.AppUser;
 import com.github.duc010298.web_api.entity.Device;
+import com.github.duc010298.web_api.entity.LocationHistory;
 import com.github.duc010298.web_api.entity.socket.CustomAppMessage;
 import com.github.duc010298.web_api.entity.socket.JsonDevice;
+import com.github.duc010298.web_api.entity.socket.JsonLocationHistory;
 import com.github.duc010298.web_api.repository.AppUserRepository;
 import com.github.duc010298.web_api.repository.DeviceRepository;
+import com.github.duc010298.web_api.repository.LocationHistoryRepository;
 
 @Controller
 @RequestMapping("/")
@@ -24,13 +27,15 @@ public class WebSocketController {
 	
 	private DeviceRepository deviceRepository;
 	private AppUserRepository appUserRepository;
+	private LocationHistoryRepository locationHistoryRepository;
 	private SimpMessagingTemplate simpMessagingTemplate;
 	
 	@Autowired
 	public WebSocketController(DeviceRepository deviceRepository, AppUserRepository appUserRepository,
-			SimpMessagingTemplate simpMessagingTemplate) {
+			LocationHistoryRepository locationHistoryRepository, SimpMessagingTemplate simpMessagingTemplate) {
 		this.deviceRepository = deviceRepository;
 		this.appUserRepository = appUserRepository;
+		this.locationHistoryRepository = locationHistoryRepository;
 		this.simpMessagingTemplate = simpMessagingTemplate;
 	}
 	
@@ -61,6 +66,28 @@ public class WebSocketController {
 		}
 		
 		String imei = customAppMessage.getImei();
+		
+		if(customAppMessage.getCommand().equals("GET_LOCATION")) {
+			Device device = deviceRepository.findByImei(imei);
+			List<LocationHistory> locationHistories = locationHistoryRepository.findAllByDeviceOrderByTimeTrackingDesc(device);
+			ArrayList<JsonLocationHistory> jsonLocationHistories = new ArrayList<>();
+			
+			for(LocationHistory l : locationHistories) {
+				JsonLocationHistory temp = new JsonLocationHistory();
+				temp.setLocationId(l.getLocationId().toString());
+				temp.setLatitude(l.getLatitude());
+				temp.setLongitude(l.getLongitude());
+				temp.setTimeTracking(l.getTimeTracking());
+				jsonLocationHistories.add(temp);
+			}
+			
+			CustomAppMessage appMessage = new CustomAppMessage();
+			appMessage.setCommand("GET_LOCATION");
+			appMessage.setImei(imei);
+			appMessage.setContent(jsonLocationHistories);
+			simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", appMessage);
+			return;
+		}
 		
 		if(checkUserOwnsDevice(username, imei) ) {
 			//TODO notify for manager
