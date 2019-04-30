@@ -9,7 +9,7 @@ public class ScheduleSendLocationHistory extends JobService {
     private SendLocationHistoryTask sendLocationHistoryTask;
     @Override
     public boolean onStartJob(final JobParameters params) {
-        sendLocationHistoryTask = new SendLocationHistoryTask(this) {
+        sendLocationHistoryTask = new SendLocationHistoryTask(this, false) {
             @Override
             protected void onPostExecute(Void v) {
                 jobFinished(params, false);

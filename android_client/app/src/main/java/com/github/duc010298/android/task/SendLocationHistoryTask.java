@@ -24,9 +24,11 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class SendLocationHistoryTask extends AsyncTask<Void, Void, Void> {
     private final Context context;
+    private final boolean isSendEmpty;
 
-    public SendLocationHistoryTask(Context context) {
+    public SendLocationHistoryTask(Context context, boolean isSendEmpty) {
         this.context = context;
+        this.isSendEmpty = isSendEmpty;
     }
 
     @Override
@@ -37,10 +39,9 @@ public class SendLocationHistoryTask extends AsyncTask<Void, Void, Void> {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         ArrayList<LocationHistory> locationHistories = databaseHelper.getHistory();
 
-        //TODO fix here
-//        if(locationHistories.isEmpty()) {
-//            return null;
-//        }
+        if(locationHistories.isEmpty() && !isSendEmpty) {
+            return null;
+        }
 
         UpdateLocationRequest updateLocationRequest = new UpdateLocationRequest();
         updateLocationRequest.setImei(new PhoneInfoHelper().getImei(context));
