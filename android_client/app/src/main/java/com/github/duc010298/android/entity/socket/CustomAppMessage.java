@@ -2,7 +2,7 @@ package com.github.duc010298.android.entity.socket;
 
 public class CustomAppMessage {
     private String command;
-    private String sendToImei;
+    private String imei;
     private Object content;
 
     public String getCommand() {
@@ -13,19 +13,19 @@ public class CustomAppMessage {
         this.command = command;
     }
 
-    public String getSendToImei() {
-        return sendToImei;
+    public String getImei() {
+        return imei;
     }
 
-    public void setSendToImei(String sendToImei) {
-        this.sendToImei = sendToImei;
+    public void setImei(String imei) {
+        this.imei = imei;
     }
 
     public Object getContent() {
         return content;
     }
 
-    public void setContent(Object object) {
+    public void setContent(Object content) {
         this.content = content;
     }
 }

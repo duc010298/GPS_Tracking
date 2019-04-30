@@ -9,7 +9,7 @@ namespace winform_client.entity
     class CustomAppMessage
     {
         public string command { get; set; }
-        public string sendToImei { get; set; }
+        public string imei { get; set; }
         public Object content { get; set; }
     }
 }

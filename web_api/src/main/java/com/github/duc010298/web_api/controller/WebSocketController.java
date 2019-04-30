@@ -15,7 +15,6 @@ import com.github.duc010298.web_api.entity.AppUser;
 import com.github.duc010298.web_api.entity.Device;
 import com.github.duc010298.web_api.entity.socket.CustomAppMessage;
 import com.github.duc010298.web_api.entity.socket.JsonDevice;
-import com.github.duc010298.web_api.entity.socket.PhoneInfoUpdate;
 import com.github.duc010298.web_api.repository.AppUserRepository;
 import com.github.duc010298.web_api.repository.DeviceRepository;
 
@@ -61,7 +60,7 @@ public class WebSocketController {
 			return;
 		}
 		
-		String imei = customAppMessage.getSendToImei();
+		String imei = customAppMessage.getImei();
 		
 		if(checkUserOwnsDevice(username, imei) ) {
 			//TODO notify for manager
@@ -76,7 +75,7 @@ public class WebSocketController {
 		//Android send request to server
 		String username = principal.getName();
 		
-		String imei = customAppMessage.getSendToImei();
+		String imei = customAppMessage.getImei();
 		
 		if(checkUserOwnsDevice(username, imei) ) {
 			//nothing to do here

@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.github.duc010298.android.entity.socket.CustomAppMessage;
+import com.github.duc010298.android.entity.socket.PhoneInfoUpdate;
 import com.github.duc010298.android.helper.ConfigHelper;
 import com.github.duc010298.android.helper.PhoneInfoHelper;
 import com.github.duc010298.android.helper.TokenHelper;
@@ -86,23 +87,23 @@ public class WebSocketService extends Service {
                     public void onMessage(StompMessage message) {
                         Gson gson = new Gson();
                         CustomAppMessage customAppMessage = gson.fromJson(message.getContent(), CustomAppMessage.class);
-                        if(!customAppMessage.getSendToImei().equals(new PhoneInfoHelper().getImei(context))) {
+                        if(!customAppMessage.getImei().equals(new PhoneInfoHelper().getImei(context))) {
                             return;
                         }
-//
-//                        switch (managerMessage.getCommand()) {
-//                            case "UPDATE_INFO":
-//                                PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoHelper().getInfoUpdate(context);
-//                                AndroidMessage androidMessage = new AndroidMessage();
-//                                androidMessage.setImei(new PhoneInfoHelper().getImei(context));
-//                                androidMessage.setCommand("UPDATE_INFO");
-//                                androidMessage.setObject(phoneInfoUpdate);
-//                                client.sendMessageJson("/app/android/request", gson.toJson(androidMessage));
-//                                break;
-//                            case "UPDATE_LOCATION":
-//
-//                                break;
-//                        }
+
+                        switch (customAppMessage.getCommand()) {
+                            case "UPDATE_INFO":
+                                CustomAppMessage messageSend = new CustomAppMessage();
+                                PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoHelper().getInfoUpdate(context);
+                                messageSend.setCommand("UPDATE_INFO");
+                                messageSend.setImei(customAppMessage.getImei());
+                                messageSend.setContent(phoneInfoUpdate);
+                                client.sendMessageJson("/app/android/request", gson.toJson(messageSend));
+                                break;
+                            case "UPDATE_LOCATION":
+
+                                break;
+                        }
                     }
                 });
                 String socketUrl = ConfigHelper.getConfigValue(context, "socket_url");

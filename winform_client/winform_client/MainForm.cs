@@ -73,6 +73,14 @@ namespace winform_client
 
         private void Button1_Click(object sender, EventArgs e)
         {
+            txtDeviceName.Text = "Unknown";
+            txtImei.Text = "Unknown";
+            txtLastUpdate.Text = "Unknown";
+            txtNetworkName.Text = "Unknown";
+            txtNetworkType.Text = "Unknown";
+            txtBatteryLevel.Text = "Unknown";
+            txtCharging.Text = "Unknown";
+
             CustomAppMessage custom = new CustomAppMessage();
             custom.command = "GET_DEVICE_LIST";
 
@@ -111,16 +119,31 @@ namespace winform_client
                 {
                     CustomAppMessage customAppMessage = JsonConvert.DeserializeObject<CustomAppMessage>(msg.Body);
                     string command = customAppMessage.command;
-                    if (command.Equals("GET_DEVICE_LIST"))
+                    switch(command)
                     {
-                        ArrayList jsonDevices = new ArrayList();
-                        ArrayList arrayList = JsonConvert.DeserializeObject<ArrayList>(customAppMessage.content.ToString());
-                        foreach (var item in arrayList)
-                        {
-                            JsonDevice jsonDevice = JsonConvert.DeserializeObject<JsonDevice>(item.ToString());
-                            jsonDevices.Add(jsonDevice);
-                        }
-                        processAddListDevice(jsonDevices);
+                        case "GET_DEVICE_LIST":
+                            ArrayList jsonDevices = new ArrayList();
+                            ArrayList arrayList = JsonConvert.DeserializeObject<ArrayList>(customAppMessage.content.ToString());
+                            foreach (var item in arrayList)
+                            {
+                                JsonDevice jsonDevice = JsonConvert.DeserializeObject<JsonDevice>(item.ToString());
+                                jsonDevices.Add(jsonDevice);
+                            }
+                            processAddListDevice(jsonDevices);
+                            break;
+                        case "UPDATE_INFO":
+                            string imei = customAppMessage.imei;
+                            string data = listBox1.GetItemText(listBox1.SelectedItem);
+                            string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
+                            if(imei.Equals(arrayValue[1]))
+                            {
+                                PhoneInfoUpdate phoneInfoUpdate = JsonConvert.DeserializeObject<PhoneInfoUpdate>(customAppMessage.content.ToString());
+                                txtNetworkName.Text = phoneInfoUpdate.networkName;
+                                txtNetworkType.Text = phoneInfoUpdate.networkType;
+                                txtBatteryLevel.Text = phoneInfoUpdate.batteryLevel + "%";
+                                txtCharging.Text = phoneInfoUpdate.isCharging.ToString();
+                            }
+                            break;
                     }
                 }
             });
@@ -147,7 +170,27 @@ namespace winform_client
 
         private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Console.WriteLine("ItemClick");
+            string data = listBox1.GetItemText(listBox1.SelectedItem);
+            string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
+
+            txtDeviceName.Text = arrayValue[0];
+            txtImei.Text = arrayValue[1];
+            txtLastUpdate.Text = arrayValue[2];
+            txtNetworkName.Text = "Unknown";
+            txtNetworkType.Text = "Unknown";
+            txtBatteryLevel.Text = "Unknown";
+            txtCharging.Text = "Unknown";
+
+            CustomAppMessage appMessage = new CustomAppMessage();
+            appMessage.command = "UPDATE_INFO";
+            appMessage.imei = arrayValue[1];
+
+            string json = JsonConvert.SerializeObject(appMessage);
+
+            var broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
         }
     }
 }
