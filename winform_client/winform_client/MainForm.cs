@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Configuration;
 using System.Linq;
 using System.Threading;
@@ -12,14 +13,14 @@ namespace winform_client
 {
     public partial class MainForm : Form
     {
-        private readonly int maxLengtListBox = 34;
         private readonly WebSocket ws;
         private readonly StompMessageSerializer serializer;
-        private readonly String clientId;
+        private readonly string clientId;
 
         public MainForm()
         {
             InitializeComponent();
+
             ws = new WebSocket(ConfigurationManager.AppSettings["socket-url"]);
             serializer = new StompMessageSerializer();
 
@@ -72,11 +73,6 @@ namespace winform_client
 
         private void Button1_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
             CustomAppMessage custom = new CustomAppMessage();
             custom.command = "GET_DEVICE_LIST";
 
@@ -86,6 +82,11 @@ namespace winform_client
             broad["content-type"] = "application/json";
             broad["destination"] = "/app/manager";
             ws.Send(serializer.Serialize(broad));
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Button1_Click(sender, e);
         }
 
         public string RandomString(int length)
@@ -103,8 +104,26 @@ namespace winform_client
 
         void ws_OnMessage(object sender, MessageEventArgs e)
         {
-            String json = e.Data;
-            Console.WriteLine(json);
+            this.BeginInvoke((Action)delegate ()
+            {
+                StompMessage msg = serializer.Deserialize(e.Data);
+                if (msg.Command == StompFrame.MESSAGE)
+                {
+                    CustomAppMessage customAppMessage = JsonConvert.DeserializeObject<CustomAppMessage>(msg.Body);
+                    string command = customAppMessage.command;
+                    if (command.Equals("GET_DEVICE_LIST"))
+                    {
+                        ArrayList jsonDevices = new ArrayList();
+                        ArrayList arrayList = JsonConvert.DeserializeObject<ArrayList>(customAppMessage.content.ToString());
+                        foreach (var item in arrayList)
+                        {
+                            JsonDevice jsonDevice = JsonConvert.DeserializeObject<JsonDevice>(item.ToString());
+                            jsonDevices.Add(jsonDevice);
+                        }
+                        processAddListDevice(jsonDevices);
+                    }
+                }
+            });
         }
 
         void ws_OnClose(object sender, CloseEventArgs e)
@@ -114,6 +133,22 @@ namespace winform_client
         void ws_OnError(object sender, ErrorEventArgs e)
         {
             
+        }
+
+        private void processAddListDevice(ArrayList jsonDevices)
+        {
+            listBox1.Items.Clear();
+            foreach (JsonDevice jsonDevice in jsonDevices) {
+                string str = jsonDevice.deviceName + " | " + jsonDevice.imei + " | ";
+                if (jsonDevice.isOnline)
+                {
+                    str += "Online";
+                } else
+                {
+                    str += jsonDevice.lastOnline.ToString("dd/MM/yy HH:mm:ss");
+                }
+                listBox1.Items.Add(str);
+            }
         }
     }
 }
