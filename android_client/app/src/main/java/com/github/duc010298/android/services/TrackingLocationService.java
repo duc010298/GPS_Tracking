@@ -42,12 +42,9 @@ public class TrackingLocationService extends Service {
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return START_STICKY;
         }
-        //10 minute and 10 meter
-        //TODO for test
-//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 600000, 10, listener);
-//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 600000, 10, listener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 300000, 0, listener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300000, 0, listener);
+        //5 minute and 20 meter
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 300000, 20, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300000, 20, listener);
         return START_STICKY;
     }
 

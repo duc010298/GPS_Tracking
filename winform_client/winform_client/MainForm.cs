@@ -21,13 +21,14 @@ namespace winform_client
         private readonly StompMessageSerializer serializer;
         private readonly string clientId;
         private ArrayList locationHistories;
-        private readonly GMapOverlay markersOverlay;
+        private readonly GMapOverlay gMapOverlay;
         private bool showOnlyCurrentLocation;
 
         public MainForm()
         {
             InitializeComponent();
-            markersOverlay = new GMapOverlay("marker");
+            locationHistories = new ArrayList();
+            gMapOverlay = new GMapOverlay("marker");
             showOnlyCurrentLocation = true;
 
             ws = new WebSocket(ConfigurationManager.AppSettings["socket-url"]);
@@ -209,7 +210,7 @@ namespace winform_client
 
         private void GetLocation(CustomAppMessage customAppMessage)
         {
-            locationHistories = new ArrayList();
+            locationHistories.Clear();
             string imei = customAppMessage.imei;
             string data = listBox1.GetItemText(listBox1.SelectedItem);
             if (String.IsNullOrEmpty(data)) return;
@@ -228,7 +229,7 @@ namespace winform_client
                 MarkedLastLocation();
             } else
             {
-                //TODO route here;
+                RoutesAllMarker();
             }
         }
 
@@ -320,7 +321,7 @@ namespace winform_client
         private void CleanGmap()
         {
             gMap.Zoom = 0;
-            markersOverlay.Markers.Clear();
+            gMapOverlay.Markers.Clear();
         }
 
         private void MarkedLastLocation()
@@ -333,8 +334,39 @@ namespace winform_client
             {
                 ToolTipText = locationHistory.timeTracking.ToString("dd/MM/yy HH:mm:ss")
             };
-            markersOverlay.Markers.Add(marker);
-            gMap.Overlays.Add(markersOverlay);
+            gMapOverlay.Markers.Add(marker);
+            gMap.Overlays.Add(gMapOverlay);
+        }
+
+        private void RoutesAllMarker()
+        {
+            if (locationHistories.Count == 0) return;
+            InitGmap();
+            bool isFrist = true;
+            foreach(JsonLocationHistory l in locationHistories)
+            {
+                var styleMarker = isFrist ? GMarkerGoogleType.red : GMarkerGoogleType.red_small;
+                GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(l.latitude, l.longitude), styleMarker)
+                {
+                    ToolTipText = l.timeTracking.ToString("dd/MM/yy HH:mm:ss")
+                };
+                gMapOverlay.Markers.Add(marker);
+            }
+
+            //TODO fix here
+            //for (int i = 0; i < locationHistories.Count - 1; i++)
+            //{
+            //    JsonLocationHistory s = (JsonLocationHistory)locationHistories[0];
+            //    JsonLocationHistory e = (JsonLocationHistory)locationHistories[0];
+            //    PointLatLng start = new PointLatLng(s.latitude, s.longitude);
+            //    PointLatLng end = new PointLatLng(e.latitude, e.longitude);
+            //    MapRoute route = GMap.NET.MapProviders.GoogleMapProvider.Instance.GetRoute(start, end, false, false, 15);
+            //    GMapRoute r = new GMapRoute(route.Points, "a");
+            //    gMapOverlay.Routes.Add(r);
+            //}
+            gMap.Overlays.Add(gMapOverlay);
+            JsonLocationHistory locationHistory = (JsonLocationHistory)locationHistories[0];
+            gMap.Position = new GMap.NET.PointLatLng(locationHistory.latitude, locationHistory.longitude);
         }
 
         private void InitGmap()
@@ -369,7 +401,7 @@ namespace winform_client
             routesToolStripMenuItem.Checked = true;
             showOnlyCurrentLocation = false;
             CleanGmap();
-            //TODO route here
+            RoutesAllMarker();
         }
     }
 }
