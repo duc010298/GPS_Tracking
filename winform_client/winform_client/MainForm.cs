@@ -215,6 +215,7 @@ namespace winform_client
             txtBatteryLevel.Text = "Unknown";
             txtCharging.Text = "Unknown";
 
+            //Update info
             CustomAppMessage appMessage = new CustomAppMessage();
             appMessage.command = "UPDATE_INFO";
             appMessage.imei = arrayValue[1];
@@ -226,6 +227,7 @@ namespace winform_client
             broad["destination"] = "/app/manager";
             ws.Send(serializer.Serialize(broad));
 
+            //Update location to server
             appMessage = new CustomAppMessage();
             appMessage.command = "UPDATE_LOCATION";
             appMessage.imei = arrayValue[1];
@@ -236,6 +238,27 @@ namespace winform_client
             broad["content-type"] = "application/json";
             broad["destination"] = "/app/manager";
             ws.Send(serializer.Serialize(broad));
+
+            //Get location
+            appMessage = new CustomAppMessage();
+            appMessage.command = "GET_LOCATION";
+            appMessage.imei = arrayValue[1];
+
+            json = JsonConvert.SerializeObject(appMessage);
+
+            broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            string data = listBox1.GetItemText(listBox1.SelectedItem);
+            if (!String.IsNullOrEmpty(data))
+            {
+                ListBox1_SelectedIndexChanged(sender, e);
+            }
         }
     }
 }

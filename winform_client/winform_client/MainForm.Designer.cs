@@ -52,6 +52,7 @@
             this.txtNetworkType = new System.Windows.Forms.Label();
             this.txtBatteryLevel = new System.Windows.Forms.Label();
             this.txtCharging = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -175,6 +176,7 @@
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox2.Controls.Add(this.button2);
             this.groupBox2.Controls.Add(this.txtCharging);
             this.groupBox2.Controls.Add(this.txtBatteryLevel);
             this.groupBox2.Controls.Add(this.txtNetworkType);
@@ -329,6 +331,16 @@
             this.txtCharging.TabIndex = 13;
             this.txtCharging.Text = "Unknown";
             // 
+            // button2
+            // 
+            this.button2.Image = global::winform_client.Properties.Resources.refresh1;
+            this.button2.Location = new System.Drawing.Point(251, 15);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(32, 32);
+            this.button2.TabIndex = 2;
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -381,5 +393,6 @@
         private System.Windows.Forms.Label txtLastUpdate;
         private System.Windows.Forms.Label txtImei;
         private System.Windows.Forms.Label txtDeviceName;
+        private System.Windows.Forms.Button button2;
     }
 }
