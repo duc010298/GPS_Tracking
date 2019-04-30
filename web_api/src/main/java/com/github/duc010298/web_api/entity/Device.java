@@ -16,8 +16,7 @@ public class Device implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String imei;
 	private String deviceName;
-	private Boolean isOnline;
-	private Date lastOnline;
+	private Date lastUpdate;
 	private AppUser appUser;
 	private List<LocationHistory> locationHistories;
 
@@ -44,25 +43,15 @@ public class Device implements Serializable {
 		this.deviceName = deviceName;
 	}
 
-
-	@Column(name="is_online")
-	public Boolean getIsOnline() {
-		return this.isOnline;
-	}
-
-	public void setIsOnline(Boolean isOnline) {
-		this.isOnline = isOnline;
-	}
-
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="last_online")
-	public Date getLastOnline() {
-		return this.lastOnline;
+	@Column(name="last_update")
+	public Date getLastUpdate() {
+		return this.lastUpdate;
 	}
 
-	public void setLastOnline(Date lastOnline) {
-		this.lastOnline = lastOnline;
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
 	}
 
 

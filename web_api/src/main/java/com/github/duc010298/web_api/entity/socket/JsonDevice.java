@@ -5,8 +5,7 @@ import java.util.Date;
 public class JsonDevice {
 	private String imei;
 	private String deviceName;
-	private Boolean isOnline;
-	private Date lastOnline;
+	private Date lastUpdate;
 	
 	public String getImei() {
 		return imei;
@@ -20,17 +19,11 @@ public class JsonDevice {
 	public void setDeviceName(String deviceName) {
 		this.deviceName = deviceName;
 	}
-	public Boolean getIsOnline() {
-		return isOnline;
+	public Date getLastUpdate() {
+		return lastUpdate;
 	}
-	public void setIsOnline(Boolean isOnline) {
-		this.isOnline = isOnline;
-	}
-	public Date getLastOnline() {
-		return lastOnline;
-	}
-	public void setLastOnline(Date lastOnline) {
-		this.lastOnline = lastOnline;
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
 	}
 	
 }

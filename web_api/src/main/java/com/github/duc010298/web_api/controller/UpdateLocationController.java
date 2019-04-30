@@ -31,8 +31,6 @@ public class UpdateLocationController {
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = "text/plain;charset=UTF-8")
     public String updateLocation(@RequestBody UpdateLocationRequest updateLocationRequest) {
-		System.out.println(new Date() + " " + updateLocationRequest.getLocationHistories().size());
-		
 		Device device = deviceRepository.findByImei(updateLocationRequest.getImei());
 		
 		LocationHistory locationHistory;
@@ -45,6 +43,9 @@ public class UpdateLocationController {
 			locationHistory.setLongitude(locationRequest.getLongitude());
 			locationHistoryRepository.save(locationHistory);
 		}
+		
+		device.setLastUpdate(new Date());
+		deviceRepository.save(device);
 		
 		return "Success";
     }

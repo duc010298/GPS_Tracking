@@ -46,8 +46,7 @@ public class RegisterDeviceController {
 		device = new Device();
 		device.setImei(phoneInfoRegister.getImei());
 		device.setDeviceName(phoneInfoRegister.getDeviceName());
-		device.setIsOnline(false);
-		device.setLastOnline(new Date());
+		device.setLastUpdate(new Date());
 		device.setAppUser(appUser);
 		
 		deviceRepository.save(device);

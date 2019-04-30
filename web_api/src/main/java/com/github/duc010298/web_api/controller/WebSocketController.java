@@ -50,8 +50,7 @@ public class WebSocketController {
 				JsonDevice jsonDevice = new JsonDevice();
 				jsonDevice.setDeviceName(d.getDeviceName());
 				jsonDevice.setImei(d.getImei());
-				jsonDevice.setIsOnline(d.getIsOnline());
-				jsonDevice.setLastOnline(d.getLastOnline());
+				jsonDevice.setLastUpdate(d.getLastUpdate());
 				jsonDevices.add(jsonDevice);
 			}
 			
