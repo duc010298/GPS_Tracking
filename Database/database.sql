@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS app_user
 	user_name 	varchar(36)	NOT NULL UNIQUE,
 	encrypted_password		varchar(128) NOT NULL,
 	token_active_after		timestamp NOT NULL DEFAULT now()
-)
+);
 CREATE TABLE IF NOT EXISTS app_role
 (
   role_id   bigint      NOT NULL PRIMARY KEY,
@@ -42,8 +42,7 @@ CREATE TABLE IF NOT EXISTS device
 	imei char(15) PRIMARY KEY,
 	user_id uuid NOT null,
 	device_name varchar(100) NOT NULL,
-	is_online BOOLEAN,
-	last_online timestamp,
+	last_update timestamp,
 	CONSTRAINT device_fk1 FOREIGN KEY (user_id) REFERENCES app_user (user_id)
 );
 
