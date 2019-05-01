@@ -195,16 +195,9 @@ namespace winform_client
             if (imei.Equals(arrayValue[1]))
             {
                 txtLastUpdate.Text = DateTime.Now.ToString("dd/MM/yy HH:mm:ss");
-                CustomAppMessage appMessage = new CustomAppMessage();
-                appMessage.command = "UPDATE_INFO";
-                appMessage.imei = arrayValue[1];
 
-                string json = JsonConvert.SerializeObject(appMessage);
-
-                var broad = new StompMessage("SEND", json);
-                broad["content-type"] = "application/json";
-                broad["destination"] = "/app/manager";
-                ws.Send(serializer.Serialize(broad));
+                UpdateInfo(imei);
+                GetLocation(imei);
             }
         }
 

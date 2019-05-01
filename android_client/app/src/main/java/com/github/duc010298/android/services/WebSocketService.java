@@ -15,7 +15,7 @@ import com.github.duc010298.android.springbootwebsocketclient.SpringBootWebSocke
 import com.github.duc010298.android.springbootwebsocketclient.StompMessage;
 import com.github.duc010298.android.springbootwebsocketclient.StompMessageListener;
 import com.github.duc010298.android.springbootwebsocketclient.TopicHandler;
-import com.github.duc010298.android.task.SendLocationHistoryTask;
+import com.github.duc010298.android.task.GetCurrentLocationTask;
 import com.google.gson.Gson;
 
 import java.util.Timer;
@@ -102,8 +102,13 @@ public class WebSocketService extends Service {
                                 client.sendMessageJson("/app/android/request", gson.toJson(messageSend));
                                 break;
                             case "UPDATE_LOCATION":
-                                SendLocationHistoryTask sendLocationHistoryTask = new SendLocationHistoryTask(context, true);
-                                sendLocationHistoryTask.execute();
+                                Thread t = new Thread() {
+                                    @Override
+                                    public void run() {
+                                        new GetCurrentLocationTask(context);
+                                    }
+                                };
+                                t.start();
                                 break;
                         }
                     }
