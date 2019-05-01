@@ -21,9 +21,9 @@ import com.google.android.gms.location.LocationServices;
 
 public class TrackingLocationService extends Service implements GoogleApiClient.ConnectionCallbacks {
 
-    private final long UPDATE_INTERVAL = 300000;
-    private final long FASTEST_INTERVAL = 150000;
-    private final double MIN_DISTANCE = 100;
+    private final long UPDATE_INTERVAL = 900000;
+    private final long FASTEST_INTERVAL = 900000;
+    private final double MIN_DISTANCE = 500;
 
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;

@@ -61,9 +61,8 @@ public class ServicesHelper {
             ComponentName componentName = new ComponentName(context, ScheduleSendLocationHistory.class);
             JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, componentName);
 
-            //TODO update here
             builder
-                    .setPeriodic(960000)
+                    .setPeriodic(5400000)
                     .setPersisted(true);
 
 
