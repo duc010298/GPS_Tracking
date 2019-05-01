@@ -22,7 +22,7 @@ import com.google.android.gms.location.LocationServices;
 public class TrackingLocationService extends Service implements GoogleApiClient.ConnectionCallbacks {
 
     private final long UPDATE_INTERVAL = 300000;
-    private final long FASTEST_INTERVAL = 300000;
+    private final long FASTEST_INTERVAL = 150000;
     private final double MIN_DISTANCE = 100;
 
     private LocationRequest locationRequest;
@@ -96,7 +96,7 @@ public class TrackingLocationService extends Service implements GoogleApiClient.
 
     private void buildLocationRequest() {
         locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
     }
