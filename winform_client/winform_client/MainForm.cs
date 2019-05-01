@@ -375,12 +375,32 @@ namespace winform_client
             gMap.DragButton = MouseButtons.Left;
         }
 
+        private static bool flagClickMarker = true;
+        Thread t = null;
+        public static void ChangeFlag()
+        {
+            Thread.Sleep(3000);
+            flagClickMarker = true;
+        }
         private void GMap_OnMarkerClick(GMapMarker item, MouseEventArgs e)
         {
-            double latitude = item.Position.Lat;
-            double longitude = item.Position.Lng;
-            System.Diagnostics.Process.Start("https://www.google.com/maps/search/?api=1&query=" +
-                latitude.ToString("G", CultureInfo.InvariantCulture) + "," + longitude.ToString("G", CultureInfo.InvariantCulture));
+            if (flagClickMarker)
+            {
+                double latitude = item.Position.Lat;
+                double longitude = item.Position.Lng;
+                System.Diagnostics.Process.Start("https://www.google.com/maps/search/?api=1&query=" +
+                    latitude.ToString("G", CultureInfo.InvariantCulture) + "," + longitude.ToString("G", CultureInfo.InvariantCulture));
+                flagClickMarker = false;
+                if (t != null)
+                {
+                    if (t.IsAlive)
+                    {
+                        t.Interrupt();
+                    }
+                }
+                t = new Thread(ChangeFlag);
+                t.Start();
+            }
         }
 
         private void CurrentLocationToolStripMenuItem_Click(object sender, EventArgs e)
