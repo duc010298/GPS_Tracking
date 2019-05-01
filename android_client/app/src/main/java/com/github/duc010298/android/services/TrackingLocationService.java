@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
+import com.github.duc010298.android.entity.LocationHistory;
 import com.github.duc010298.android.helper.DatabaseHelper;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -22,11 +23,11 @@ public class TrackingLocationService extends Service implements GoogleApiClient.
 
     private final long UPDATE_INTERVAL = 10000;
     private final long FASTEST_INTERVAL = 10000;
+    private final double MIN_DISTANCE = 100;
 
     private LocationRequest locationRequest;
-    private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
-
+    private FusedLocationProviderClient fusedLocationClient;
 
     private DatabaseHelper databaseHelper;
 
@@ -50,6 +51,12 @@ public class TrackingLocationService extends Service implements GoogleApiClient.
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
+                    LocationHistory latestLocation = databaseHelper.getLatestLocation();
+                    if(latestLocation != null) {
+                        if(distance(latestLocation.getLatitude(), latestLocation.getLongitude(), location.getLatitude(), location.getLongitude()) < MIN_DISTANCE) {
+                            databaseHelper.deleteLatest();
+                        }
+                    }
                     databaseHelper.addLocationHistory(location);
                 }
             }
@@ -71,10 +78,10 @@ public class TrackingLocationService extends Service implements GoogleApiClient.
     public void onDestroy() {
         super.onDestroy();
 
+        stopLocationUpdates();
+
         Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartTracking");
         sendBroadcast(broadcastIntent);
-
-        stopLocationUpdates();
     }
 
     @Override
@@ -104,5 +111,34 @@ public class TrackingLocationService extends Service implements GoogleApiClient.
 
     private void stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback);
+    }
+
+    /**
+     * Calculate distance between two points in latitude and longitude taking
+     * into account height difference. If you are not interested in height
+     * difference pass 0.0. Uses Haversine method as its base.
+     *
+     * lat1, lon1 Start point lat2, lon2 End point el1 Start altitude in meters
+     * el2 End altitude in meters
+     * @returns Distance in Meters
+     */
+    private double distance(double lat1, double lon1, double lat2, double lon2) {
+        double el1 = 0;
+        double el2 = 0;
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // convert to meters
+
+        double height = el1 - el2;
+
+        distance = Math.pow(distance, 2) + Math.pow(height, 2);
+
+        return Math.sqrt(distance);
     }
 }

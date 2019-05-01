@@ -65,7 +65,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 locationHistories.add(locationHistory);
             } while (cursor.moveToNext());
         }
+        cursor.close();
+        db.close();
 
         return locationHistories;
+    }
+
+    public LocationHistory getLatestLocation() {
+        LocationHistory locationHistory = null;
+        String getLatestLocationQuery = "SELECT time_tracking, latitude, longitude FROM Location_History ORDER BY time_tracking DESC LIMIT 1";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(getLatestLocationQuery, null);
+        if(cursor.moveToFirst()) {
+            locationHistory = new LocationHistory();
+            locationHistory.setTime(Long.parseLong(cursor.getString(0)));
+            locationHistory.setLatitude(Double.parseDouble(cursor.getString(1)));
+            locationHistory.setLongitude(Double.parseDouble(cursor.getString(2)));
+        }
+
+        cursor.close();
+        db.close();
+
+        return locationHistory;
+    }
+
+    public void deleteLatest() {
+        String getLatestTimeTracking = "SELECT time_tracking FROM Location_History ORDER BY time_tracking DESC LIMIT 1";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(getLatestTimeTracking, null);
+
+        if(cursor.moveToFirst()) {
+            SQLiteDatabase dbDelete = this.getWritableDatabase();
+            Long latestTimeTracking = Long.parseLong(cursor.getString(0));
+            dbDelete.delete("Location_History", "time_tracking = ?", new String[] { String.valueOf(latestTimeTracking) });
+            dbDelete.close();
+        }
+        cursor.close();
+        db.close();
     }
 }
