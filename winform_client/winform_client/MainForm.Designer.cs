@@ -114,6 +114,7 @@
             this.gMap.Size = new System.Drawing.Size(769, 641);
             this.gMap.TabIndex = 0;
             this.gMap.Zoom = 0D;
+            this.gMap.OnMarkerClick += new GMap.NET.WindowsForms.MarkerClick(this.GMap_OnMarkerClick);
             // 
             // menuStrip1
             // 

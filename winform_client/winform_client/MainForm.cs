@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Configuration;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -379,7 +378,7 @@ namespace winform_client
         {
             double latitude = item.Position.Lat;
             double longitude = item.Position.Lng;
-            System.Diagnostics.Process.Start("https://www.google.com/maps/search/?api=1&query=" + 
+            System.Diagnostics.Process.Start("https://www.google.com/maps/search/?api=1&query=" +
                 latitude.ToString("G", CultureInfo.InvariantCulture) + "," + longitude.ToString("G", CultureInfo.InvariantCulture));
         }
 
