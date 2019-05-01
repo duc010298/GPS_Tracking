@@ -34,29 +34,29 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.programToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.txtDeviceName = new System.Windows.Forms.Label();
-            this.txtImei = new System.Windows.Forms.Label();
-            this.txtLastUpdate = new System.Windows.Forms.Label();
-            this.txtNetworkName = new System.Windows.Forms.Label();
-            this.txtNetworkType = new System.Windows.Forms.Label();
-            this.txtBatteryLevel = new System.Windows.Forms.Label();
-            this.txtCharging = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
             this.settingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.currentLocationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.routesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.txtCharging = new System.Windows.Forms.Label();
+            this.txtBatteryLevel = new System.Windows.Forms.Label();
+            this.txtNetworkType = new System.Windows.Forms.Label();
+            this.txtNetworkName = new System.Windows.Forms.Label();
+            this.txtLastUpdate = new System.Windows.Forms.Label();
+            this.txtImei = new System.Windows.Forms.Label();
+            this.txtDeviceName = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -99,7 +99,7 @@
             this.gMap.LevelsKeepInMemmory = 5;
             this.gMap.Location = new System.Drawing.Point(3, 3);
             this.gMap.MarkersEnabled = true;
-            this.gMap.MaxZoom = 18;
+            this.gMap.MaxZoom = 20;
             this.gMap.MinZoom = 2;
             this.gMap.MouseWheelZoomEnabled = true;
             this.gMap.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
@@ -114,7 +114,6 @@
             this.gMap.Size = new System.Drawing.Size(769, 641);
             this.gMap.TabIndex = 0;
             this.gMap.Zoom = 0D;
-            this.gMap.OnMarkerClick += new GMap.NET.WindowsForms.MarkerClick(this.GMap_OnMarkerClick);
             // 
             // menuStrip1
             // 
@@ -141,6 +140,39 @@
             this.logoutToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.logoutToolStripMenuItem.Text = "Logout";
             this.logoutToolStripMenuItem.Click += new System.EventHandler(this.LogoutToolStripMenuItem_Click);
+            // 
+            // settingToolStripMenuItem
+            // 
+            this.settingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+            this.settingToolStripMenuItem.Name = "settingToolStripMenuItem";
+            this.settingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
+            this.settingToolStripMenuItem.Text = "Setting";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.currentLocationToolStripMenuItem,
+            this.routesToolStripMenuItem});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(105, 22);
+            this.toolStripMenuItem1.Text = "Mode";
+            // 
+            // currentLocationToolStripMenuItem
+            // 
+            this.currentLocationToolStripMenuItem.Checked = true;
+            this.currentLocationToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.currentLocationToolStripMenuItem.Name = "currentLocationToolStripMenuItem";
+            this.currentLocationToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.currentLocationToolStripMenuItem.Text = "Current Location";
+            this.currentLocationToolStripMenuItem.Click += new System.EventHandler(this.CurrentLocationToolStripMenuItem_Click);
+            // 
+            // routesToolStripMenuItem
+            // 
+            this.routesToolStripMenuItem.Name = "routesToolStripMenuItem";
+            this.routesToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.routesToolStripMenuItem.Text = "Routes";
+            this.routesToolStripMenuItem.Click += new System.EventHandler(this.RoutesToolStripMenuItem_Click);
             // 
             // groupBox1
             // 
@@ -204,128 +236,15 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Device Information";
             // 
-            // label2
+            // button2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(19, 25);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 13);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Device name:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(19, 55);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(32, 13);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "IMEI:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(19, 82);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(68, 13);
-            this.label4.TabIndex = 2;
-            this.label4.Text = "Last Update:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(19, 113);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(79, 13);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "Network name:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(19, 145);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(73, 13);
-            this.label6.TabIndex = 4;
-            this.label6.Text = "Network type:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(19, 176);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(68, 13);
-            this.label7.TabIndex = 5;
-            this.label7.Text = "Battery level:";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(19, 206);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(52, 13);
-            this.label8.TabIndex = 6;
-            this.label8.Text = "Charging:";
-            // 
-            // txtDeviceName
-            // 
-            this.txtDeviceName.AutoSize = true;
-            this.txtDeviceName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-            this.txtDeviceName.Location = new System.Drawing.Point(98, 25);
-            this.txtDeviceName.Name = "txtDeviceName";
-            this.txtDeviceName.Size = new System.Drawing.Size(60, 13);
-            this.txtDeviceName.TabIndex = 7;
-            this.txtDeviceName.Text = "Unknown";
-            // 
-            // txtImei
-            // 
-            this.txtImei.AutoSize = true;
-            this.txtImei.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-            this.txtImei.Location = new System.Drawing.Point(57, 55);
-            this.txtImei.Name = "txtImei";
-            this.txtImei.Size = new System.Drawing.Size(60, 13);
-            this.txtImei.TabIndex = 8;
-            this.txtImei.Text = "Unknown";
-            // 
-            // txtLastUpdate
-            // 
-            this.txtLastUpdate.AutoSize = true;
-            this.txtLastUpdate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-            this.txtLastUpdate.Location = new System.Drawing.Point(93, 82);
-            this.txtLastUpdate.Name = "txtLastUpdate";
-            this.txtLastUpdate.Size = new System.Drawing.Size(60, 13);
-            this.txtLastUpdate.TabIndex = 9;
-            this.txtLastUpdate.Text = "Unknown";
-            // 
-            // txtNetworkName
-            // 
-            this.txtNetworkName.AutoSize = true;
-            this.txtNetworkName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-            this.txtNetworkName.Location = new System.Drawing.Point(104, 113);
-            this.txtNetworkName.Name = "txtNetworkName";
-            this.txtNetworkName.Size = new System.Drawing.Size(60, 13);
-            this.txtNetworkName.TabIndex = 10;
-            this.txtNetworkName.Text = "Unknown";
-            // 
-            // txtNetworkType
-            // 
-            this.txtNetworkType.AutoSize = true;
-            this.txtNetworkType.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-            this.txtNetworkType.Location = new System.Drawing.Point(98, 145);
-            this.txtNetworkType.Name = "txtNetworkType";
-            this.txtNetworkType.Size = new System.Drawing.Size(60, 13);
-            this.txtNetworkType.TabIndex = 11;
-            this.txtNetworkType.Text = "Unknown";
-            // 
-            // txtBatteryLevel
-            // 
-            this.txtBatteryLevel.AutoSize = true;
-            this.txtBatteryLevel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-            this.txtBatteryLevel.Location = new System.Drawing.Point(93, 176);
-            this.txtBatteryLevel.Name = "txtBatteryLevel";
-            this.txtBatteryLevel.Size = new System.Drawing.Size(60, 13);
-            this.txtBatteryLevel.TabIndex = 12;
-            this.txtBatteryLevel.Text = "Unknown";
+            this.button2.Image = global::winform_client.Properties.Resources.refresh1;
+            this.button2.Location = new System.Drawing.Point(251, 15);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(32, 32);
+            this.button2.TabIndex = 2;
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
             // txtCharging
             // 
@@ -337,48 +256,128 @@
             this.txtCharging.TabIndex = 13;
             this.txtCharging.Text = "Unknown";
             // 
-            // button2
+            // txtBatteryLevel
             // 
-            this.button2.Image = global::winform_client.Properties.Resources.refresh1;
-            this.button2.Location = new System.Drawing.Point(251, 15);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(32, 32);
-            this.button2.TabIndex = 2;
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.Button2_Click);
+            this.txtBatteryLevel.AutoSize = true;
+            this.txtBatteryLevel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.txtBatteryLevel.Location = new System.Drawing.Point(93, 176);
+            this.txtBatteryLevel.Name = "txtBatteryLevel";
+            this.txtBatteryLevel.Size = new System.Drawing.Size(60, 13);
+            this.txtBatteryLevel.TabIndex = 12;
+            this.txtBatteryLevel.Text = "Unknown";
             // 
-            // settingToolStripMenuItem
+            // txtNetworkType
             // 
-            this.settingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1});
-            this.settingToolStripMenuItem.Name = "settingToolStripMenuItem";
-            this.settingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
-            this.settingToolStripMenuItem.Text = "Setting";
+            this.txtNetworkType.AutoSize = true;
+            this.txtNetworkType.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.txtNetworkType.Location = new System.Drawing.Point(98, 145);
+            this.txtNetworkType.Name = "txtNetworkType";
+            this.txtNetworkType.Size = new System.Drawing.Size(60, 13);
+            this.txtNetworkType.TabIndex = 11;
+            this.txtNetworkType.Text = "Unknown";
             // 
-            // toolStripMenuItem1
+            // txtNetworkName
             // 
-            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.currentLocationToolStripMenuItem,
-            this.routesToolStripMenuItem});
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem1.Text = "Mode";
+            this.txtNetworkName.AutoSize = true;
+            this.txtNetworkName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.txtNetworkName.Location = new System.Drawing.Point(104, 113);
+            this.txtNetworkName.Name = "txtNetworkName";
+            this.txtNetworkName.Size = new System.Drawing.Size(60, 13);
+            this.txtNetworkName.TabIndex = 10;
+            this.txtNetworkName.Text = "Unknown";
             // 
-            // currentLocationToolStripMenuItem
+            // txtLastUpdate
             // 
-            this.currentLocationToolStripMenuItem.Checked = true;
-            this.currentLocationToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.currentLocationToolStripMenuItem.Name = "currentLocationToolStripMenuItem";
-            this.currentLocationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.currentLocationToolStripMenuItem.Text = "Current Location";
-            this.currentLocationToolStripMenuItem.Click += new System.EventHandler(this.CurrentLocationToolStripMenuItem_Click);
+            this.txtLastUpdate.AutoSize = true;
+            this.txtLastUpdate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.txtLastUpdate.Location = new System.Drawing.Point(93, 82);
+            this.txtLastUpdate.Name = "txtLastUpdate";
+            this.txtLastUpdate.Size = new System.Drawing.Size(60, 13);
+            this.txtLastUpdate.TabIndex = 9;
+            this.txtLastUpdate.Text = "Unknown";
             // 
-            // routesToolStripMenuItem
+            // txtImei
             // 
-            this.routesToolStripMenuItem.Name = "routesToolStripMenuItem";
-            this.routesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.routesToolStripMenuItem.Text = "Routes";
-            this.routesToolStripMenuItem.Click += new System.EventHandler(this.RoutesToolStripMenuItem_Click);
+            this.txtImei.AutoSize = true;
+            this.txtImei.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.txtImei.Location = new System.Drawing.Point(57, 55);
+            this.txtImei.Name = "txtImei";
+            this.txtImei.Size = new System.Drawing.Size(60, 13);
+            this.txtImei.TabIndex = 8;
+            this.txtImei.Text = "Unknown";
+            // 
+            // txtDeviceName
+            // 
+            this.txtDeviceName.AutoSize = true;
+            this.txtDeviceName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+            this.txtDeviceName.Location = new System.Drawing.Point(98, 25);
+            this.txtDeviceName.Name = "txtDeviceName";
+            this.txtDeviceName.Size = new System.Drawing.Size(60, 13);
+            this.txtDeviceName.TabIndex = 7;
+            this.txtDeviceName.Text = "Unknown";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(19, 206);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(52, 13);
+            this.label8.TabIndex = 6;
+            this.label8.Text = "Charging:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(19, 176);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(68, 13);
+            this.label7.TabIndex = 5;
+            this.label7.Text = "Battery level:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(19, 145);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(73, 13);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "Network type:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(19, 113);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(79, 13);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "Network name:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(19, 82);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(68, 13);
+            this.label4.TabIndex = 2;
+            this.label4.Text = "Last Update:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(19, 55);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(32, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "IMEI:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(19, 25);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(73, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Device name:";
             // 
             // MainForm
             // 

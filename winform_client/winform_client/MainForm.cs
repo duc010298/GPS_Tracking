@@ -91,6 +91,7 @@ namespace winform_client
 
         private void Button1_Click(object sender, EventArgs e)
         {
+            CleanGmap();
             txtDeviceName.Text = "Unknown";
             txtImei.Text = "Unknown";
             txtLastUpdate.Text = "Unknown";
@@ -203,6 +204,7 @@ namespace winform_client
 
         private void GetLocation(CustomAppMessage customAppMessage)
         {
+            CleanGmap();
             locationHistories.Clear();
             string imei = customAppMessage.imei;
             string data = listBox1.GetItemText(listBox1.SelectedItem);
@@ -250,14 +252,14 @@ namespace winform_client
             txtBatteryLevel.Text = "Unknown";
             txtCharging.Text = "Unknown";
 
+            //Get location
+            GetLocation(arrayValue[1]);
+
             //Update info
             UpdateInfo(arrayValue[1]);
 
             //Update location to server
-            CallUpdateLocationToServer(arrayValue[1]);
-
-            //Get location
-            GetLocation(arrayValue[1]);
+            CallUpdateLocation(arrayValue[1]);
         }
 
         private void UpdateInfo(string imei)
@@ -274,7 +276,7 @@ namespace winform_client
             ws.Send(serializer.Serialize(broad));
         }
 
-        private void CallUpdateLocationToServer(string imei)
+        private void CallUpdateLocation(string imei)
         {
             CustomAppMessage appMessage = new CustomAppMessage();
             appMessage.command = "UPDATE_LOCATION";
@@ -313,8 +315,9 @@ namespace winform_client
 
         private void CleanGmap()
         {
-            gMap.Zoom = 0;
+            gMap.Zoom = 5;
             gMapOverlay.Markers.Clear();
+            gMap.Overlays.Add(gMapOverlay);
         }
 
         private void MarkedLastLocation()
@@ -344,6 +347,7 @@ namespace winform_client
                     ToolTipText = l.timeTracking.ToString("dd/MM/yy HH:mm:ss")
                 };
                 gMapOverlay.Markers.Add(marker);
+                isFrist = false;
             }
 
             //TODO fix here
@@ -367,7 +371,7 @@ namespace winform_client
             gMap.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
             GMaps.Instance.Mode = AccessMode.ServerOnly;
             gMap.ShowCenter = false;
-            gMap.Zoom = 15;
+            gMap.Zoom = 16;
             gMap.DragButton = MouseButtons.Left;
         }
 
