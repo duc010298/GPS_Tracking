@@ -55,7 +55,7 @@ public class WebSocketService extends Service {
         super.onDestroy();
         if(client != null) client.disconnect();
 
-        Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartTracking");
+        Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartWebSocket");
         sendBroadcast(broadcastIntent);
 
         stopTimerTask();
