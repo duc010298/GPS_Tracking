@@ -23,7 +23,7 @@ import com.github.duc010298.web_api.repository.LocationHistoryRepository;
 @RestController
 @RequestMapping(path = "/UpdateLocation")
 public class UpdateLocationController {
-	private final double MIN_DISTANCE = 100;
+	private final double MIN_DISTANCE = 500;
 	
 	private DeviceRepository deviceRepository;
 	private LocationHistoryRepository locationHistoryRepository;
