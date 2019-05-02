@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.github.duc010298.android.entity.socket.CustomAppMessage;
 import com.github.duc010298.android.entity.socket.PhoneInfoUpdate;
@@ -18,8 +19,6 @@ import com.github.duc010298.android.springbootwebsocketclient.TopicHandler;
 import com.github.duc010298.android.task.GetCurrentLocationTask;
 import com.google.gson.Gson;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import okhttp3.Response;
@@ -29,8 +28,6 @@ public class WebSocketService extends Service {
 
     private SpringBootWebSocketClient client = null;
     private Context context;
-    private Timer timer;
-    private TimerTask reConnectTask;
 
     public WebSocketService() {
     }
@@ -45,7 +42,57 @@ public class WebSocketService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = this;
 
-        startTimer();
+        Log.i("Debug 1", "Reconnect WebSocket");
+        client = new SpringBootWebSocketClient(UUID.randomUUID().toString()) {
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                Log.i("Debug 2:", "onFailure");
+                t.printStackTrace();
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    Log.i("Debug 2.5:", "Exception");
+                    e.printStackTrace();
+                }
+                stopSelf();
+            }
+        };
+        Log.i("Token", new TokenHelper().getTokenFromMemory(context));
+        client.setAuthorizationToken(new TokenHelper().getTokenFromMemory(context));
+        TopicHandler handler = client.subscribe("/user/topic/android");
+        handler.addListener(new StompMessageListener() {
+            @Override
+            public void onMessage(StompMessage message) {
+                Gson gson = new Gson();
+                CustomAppMessage customAppMessage = gson.fromJson(message.getContent(), CustomAppMessage.class);
+                if(!customAppMessage.getImei().equals(new PhoneInfoHelper().getImei(context))) {
+                    return;
+                }
+
+                switch (customAppMessage.getCommand()) {
+                    case "UPDATE_INFO":
+                        CustomAppMessage messageSend = new CustomAppMessage();
+                        PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoHelper().getInfoUpdate(context);
+                        messageSend.setCommand("UPDATE_INFO");
+                        messageSend.setImei(customAppMessage.getImei());
+                        messageSend.setContent(phoneInfoUpdate);
+                        client.sendMessageJson("/app/android/request", gson.toJson(messageSend));
+                        break;
+                    case "UPDATE_LOCATION":
+                        Thread t = new Thread() {
+                            @Override
+                            public void run() {
+                                new GetCurrentLocationTask(context);
+                            }
+                        };
+                        t.start();
+                        break;
+                }
+            }
+        });
+        Log.i("Debug 3:", ConfigHelper.getConfigValue(context, "socket_url"));
+        String socketUrl = ConfigHelper.getConfigValue(context, "socket_url");
+        client.connect(socketUrl);
 
         return START_STICKY;
     }
@@ -57,77 +104,5 @@ public class WebSocketService extends Service {
 
         Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartWebSocket");
         sendBroadcast(broadcastIntent);
-
-        stopTimerTask();
-    }
-
-    private void startTimer() {
-        stopTimerTask();
-
-        timer = new Timer();
-        initializeTimerTask();
-
-        //schedule the timer, to wake up every 10 second
-        timer.schedule(reConnectTask, 10000);
-    }
-
-    private void initializeTimerTask() {
-        reConnectTask = new TimerTask() {
-            public void run() {
-                client = new SpringBootWebSocketClient(UUID.randomUUID().toString()) {
-                    @Override
-                    public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                        startTimer();
-                    }
-                };
-
-                client.setAuthorizationToken(new TokenHelper().getTokenFromMemory(context));
-                TopicHandler handler = client.subscribe("/user/topic/android");
-                handler.addListener(new StompMessageListener() {
-                    @Override
-                    public void onMessage(StompMessage message) {
-                        Gson gson = new Gson();
-                        CustomAppMessage customAppMessage = gson.fromJson(message.getContent(), CustomAppMessage.class);
-                        if(!customAppMessage.getImei().equals(new PhoneInfoHelper().getImei(context))) {
-                            return;
-                        }
-
-                        switch (customAppMessage.getCommand()) {
-                            case "UPDATE_INFO":
-                                CustomAppMessage messageSend = new CustomAppMessage();
-                                PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoHelper().getInfoUpdate(context);
-                                messageSend.setCommand("UPDATE_INFO");
-                                messageSend.setImei(customAppMessage.getImei());
-                                messageSend.setContent(phoneInfoUpdate);
-                                client.sendMessageJson("/app/android/request", gson.toJson(messageSend));
-                                break;
-                            case "UPDATE_LOCATION":
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        new GetCurrentLocationTask(context);
-                                    }
-                                };
-                                t.start();
-                                break;
-                        }
-                    }
-                });
-                String socketUrl = ConfigHelper.getConfigValue(context, "socket_url");
-                client.connect(socketUrl);
-                if(client.isConnected()) {
-                    stopTimerTask();
-                }
-            }
-        };
-    }
-
-    private void stopTimerTask() {
-        //stop the timer, if it's not already null
-        if (timer != null) {
-            timer.cancel();
-            timer.purge();
-            timer = null;
-        }
     }
 }
