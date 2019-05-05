@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.github.duc010298.android.entity.socket.CustomAppMessage;
 import com.github.duc010298.android.entity.socket.PhoneInfoUpdate;
@@ -41,23 +40,18 @@ public class WebSocketService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = this;
-
-        Log.i("Debug 1", "Reconnect WebSocket");
         client = new SpringBootWebSocketClient(UUID.randomUUID().toString()) {
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                Log.i("Debug 2:", "onFailure");
                 t.printStackTrace();
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
-                    Log.i("Debug 2.5:", "Exception");
                     e.printStackTrace();
                 }
                 stopSelf();
             }
         };
-        Log.i("Token", new TokenHelper().getTokenFromMemory(context));
         client.setAuthorizationToken(new TokenHelper().getTokenFromMemory(context));
         TopicHandler handler = client.subscribe("/user/topic/android");
         handler.addListener(new StompMessageListener() {
@@ -90,7 +84,6 @@ public class WebSocketService extends Service {
                 }
             }
         });
-        Log.i("Debug 3:", ConfigHelper.getConfigValue(context, "socket_url"));
         String socketUrl = ConfigHelper.getConfigValue(context, "socket_url");
         client.connect(socketUrl);
 
