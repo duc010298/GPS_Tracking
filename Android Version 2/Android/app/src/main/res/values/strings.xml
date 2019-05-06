@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Android</string>
+    <string name="gps_tracking">GPS Tracking</string>
+    <string name="username">Username:</string>
+    <string name="password">Password:</string>
+    <string name="login">Login</string>
+    <string name="service_is_running">Service is running</string>
+    <string name="logout">Logout</string>
+</resources>
