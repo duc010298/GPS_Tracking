@@ -33,7 +33,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
         this.context = context;
         dialog = new ProgressDialog(context);
         okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(20, TimeUnit.SECONDS)
                 .build();
     }
 

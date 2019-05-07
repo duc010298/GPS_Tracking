@@ -29,7 +29,7 @@ public class SendLocationHistoryTask extends AsyncTask<Void, Void, Void> {
     public SendLocationHistoryTask(Context context) {
         this.context = context;
         okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS)
+                .connectTimeout(20, TimeUnit.SECONDS)
                 .build();
     }
 
