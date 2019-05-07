@@ -33,8 +33,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText txtUsername;
     private EditText txtPassword;
-    private final long UPDATE_INTERVAL = 300000;
-    private final long FASTEST_INTERVAL = 150000;
+    private final long UPDATE_INTERVAL = 600000;
+    private final long FASTEST_INTERVAL = 600000;
     private final int REQUEST_CHECK_SETTINGS = 1998;
 
     @Override

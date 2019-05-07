@@ -53,7 +53,8 @@ public class SpringBootWebSocketClient extends WebSocketListener {
     public void connect(String address) {
         OkHttpClient client = new OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
-                .readTimeout(0,  TimeUnit.MILLISECONDS)
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20,  TimeUnit.SECONDS)
                 .build();
 
         Request request = new Request.Builder()
