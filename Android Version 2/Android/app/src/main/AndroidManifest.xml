@@ -21,7 +21,6 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity android:name=".activity.LoginSuccessActivity" />
-
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,10 +32,19 @@
         <receiver
             android:name=".broadcast.RestartTrackingLocation"
             android:enabled="true"
-            android:exported="false"
-            android:label="RestartServiceWhenStopped">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.github.duc010298.gps_tracking.android.RestartTracking" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".broadcast.RestartWebSocket"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.github.duc010298.gps_tracking.android.RestartWebSocket" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
@@ -44,7 +52,6 @@
         <service
             android:name=".services.TrackingLocationService"
             android:enabled="true" />
-
         <service
             android:name=".services.ScheduleSendLocationHistory"
             android:enabled="true"
