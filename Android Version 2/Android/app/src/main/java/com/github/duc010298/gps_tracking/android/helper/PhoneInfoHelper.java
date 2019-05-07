@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 
 import com.github.duc010298.gps_tracking.android.entity.PhoneInfoRegister;
+import com.github.duc010298.gps_tracking.android.entity.socket.PhoneInfoUpdate;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -42,27 +43,27 @@ public class PhoneInfoHelper {
         return phoneInfoRegister;
     }
 
-//    public PhoneInfoUpdate getInfoUpdate(Context context) {
-//        SharedPreferences pre = context.getSharedPreferences("android_client", MODE_PRIVATE);
-//        String imei = pre.getString("imei_device", "");
-//
-//        NetworkInfo networkInfo = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-//        String networkName = networkInfo.getExtraInfo();
-//        String networkType = networkInfo.getTypeName();
-//
-//        Intent batteryStatus = context.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-//        int batteryLevel = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-//
-//        int plugged = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-//        boolean isCharging = (plugged == BatteryManager.BATTERY_PLUGGED_AC
-//                || plugged == BatteryManager.BATTERY_PLUGGED_USB
-//                || plugged == BatteryManager.BATTERY_PLUGGED_WIRELESS);
-//
-//        PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoUpdate();
-//        phoneInfoUpdate.setNetworkName(networkName);
-//        phoneInfoUpdate.setNetworkType(networkType);
-//        phoneInfoUpdate.setBatteryLevel(batteryLevel);
-//        phoneInfoUpdate.setCharging(isCharging);
-//        return phoneInfoUpdate;
-//    }
+    public PhoneInfoUpdate getInfoUpdate(Context context) {
+        SharedPreferences pre = context.getSharedPreferences("android_client", MODE_PRIVATE);
+        String imei = pre.getString("imei_device", "");
+
+        NetworkInfo networkInfo = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        String networkName = networkInfo.getExtraInfo();
+        String networkType = networkInfo.getTypeName();
+
+        Intent batteryStatus = context.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        int batteryLevel = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+
+        int plugged = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+        boolean isCharging = (plugged == BatteryManager.BATTERY_PLUGGED_AC
+                || plugged == BatteryManager.BATTERY_PLUGGED_USB
+                || plugged == BatteryManager.BATTERY_PLUGGED_WIRELESS);
+
+        PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoUpdate();
+        phoneInfoUpdate.setNetworkName(networkName);
+        phoneInfoUpdate.setNetworkType(networkType);
+        phoneInfoUpdate.setBatteryLevel(batteryLevel);
+        phoneInfoUpdate.setCharging(isCharging);
+        return phoneInfoUpdate;
+    }
 }

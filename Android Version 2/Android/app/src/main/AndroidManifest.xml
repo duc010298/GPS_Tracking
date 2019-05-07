@@ -51,7 +51,14 @@
 
         <service
             android:name=".services.TrackingLocationService"
-            android:enabled="true" />
+            android:enabled="true"
+            android:launchMode="singleTop"/>
+
+        <service
+            android:name=".services.WebSocketService"
+            android:enabled="true"
+            android:launchMode="singleTop"/>
+
         <service
             android:name=".services.ScheduleSendLocationHistory"
             android:enabled="true"
