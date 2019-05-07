@@ -36,7 +36,7 @@
             android:exported="false"
             android:label="RestartServiceWhenStopped">
             <intent-filter>
-                <action android:name="com.github.duc010298.android.RestartTracking" />
+                <action android:name="com.github.duc010298.gps_tracking.android.RestartTracking" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>

@@ -14,7 +14,6 @@ import com.github.duc010298.gps_tracking.android.services.TrackingLocationServic
 import static android.content.Context.MODE_PRIVATE;
 
 public class ServicesHelper {
-    private final int JOB_ID = 100;
 
     public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -32,7 +31,7 @@ public class ServicesHelper {
         edit.putBoolean("isTrackingLocationRun", true);
         edit.apply();
 
-        Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartTracking");
+        Intent broadcastIntent = new Intent("com.github.duc010298.gps_tracking.android.RestartTracking");
         context.sendBroadcast(broadcastIntent);
     }
 
@@ -57,7 +56,7 @@ public class ServicesHelper {
             edit.putBoolean("isJobServiceSendLocationHistoryRun", false);
             edit.apply();
             ComponentName componentName = new ComponentName(context, ScheduleSendLocationHistory.class);
-            JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, componentName);
+            JobInfo.Builder builder = new JobInfo.Builder(100, componentName);
 
             builder
                     .setPeriodic(5400000)

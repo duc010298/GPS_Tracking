@@ -81,7 +81,7 @@ public class TrackingLocationService extends Service implements GoogleApiClient.
 
         stopLocationUpdates();
 
-        Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartTracking");
+        Intent broadcastIntent = new Intent("com.github.duc010298.gps_tracking.android.RestartTracking");
         sendBroadcast(broadcastIntent);
     }
 
