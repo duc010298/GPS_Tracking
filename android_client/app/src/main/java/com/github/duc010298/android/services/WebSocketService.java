@@ -11,21 +11,18 @@ import com.github.duc010298.android.entity.socket.PhoneInfoUpdate;
 import com.github.duc010298.android.helper.ConfigHelper;
 import com.github.duc010298.android.helper.PhoneInfoHelper;
 import com.github.duc010298.android.helper.TokenHelper;
-import com.github.duc010298.android.springbootwebsocketclient.SpringBootWebSocketClient;
-import com.github.duc010298.android.springbootwebsocketclient.StompMessage;
-import com.github.duc010298.android.springbootwebsocketclient.StompMessageListener;
-import com.github.duc010298.android.springbootwebsocketclient.TopicHandler;
 import com.github.duc010298.android.task.GetCurrentLocationTask;
+import com.github.duc010298.android.websocket.StompMessage;
+import com.github.duc010298.android.websocket.StompMessageSerializer;
+import com.github.duc010298.android.websocket.WebSocketClient;
 import com.google.gson.Gson;
-
-import java.util.UUID;
 
 import okhttp3.Response;
 import okhttp3.WebSocket;
 
 public class WebSocketService extends Service {
 
-    private SpringBootWebSocketClient client = null;
+    private WebSocketClient client = null;
     private Context context;
 
     public WebSocketService() {
@@ -40,7 +37,7 @@ public class WebSocketService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = this;
-        client = new SpringBootWebSocketClient(UUID.randomUUID().toString()) {
+        client = new WebSocketClient() {
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
                 t.printStackTrace();
@@ -51,14 +48,17 @@ public class WebSocketService extends Service {
                 }
                 stopSelf();
             }
-        };
-        client.setAuthorizationToken(new TokenHelper().getTokenFromMemory(context));
-        TopicHandler handler = client.subscribe("/user/topic/android");
-        handler.addListener(new StompMessageListener() {
+
             @Override
-            public void onMessage(StompMessage message) {
+            public void onMessage(WebSocket webSocket, String text) {
+                StompMessage message = StompMessageSerializer.deserialize(text);
+                if(!message.getCommand().equals("MESSAGE")) return;
+                String content = message.getContent();
+                if(content.equals("PING")) {
+                    return;
+                }
                 Gson gson = new Gson();
-                CustomAppMessage customAppMessage = gson.fromJson(message.getContent(), CustomAppMessage.class);
+                CustomAppMessage customAppMessage = gson.fromJson(content, CustomAppMessage.class);
                 if(!customAppMessage.getImei().equals(new PhoneInfoHelper().getImei(context))) {
                     return;
                 }
@@ -70,7 +70,12 @@ public class WebSocketService extends Service {
                         messageSend.setCommand("UPDATE_INFO");
                         messageSend.setImei(customAppMessage.getImei());
                         messageSend.setContent(phoneInfoUpdate);
-                        client.sendMessageJson("/app/android/request", gson.toJson(messageSend));
+
+                        StompMessage stompMessageSend = new StompMessage("SEND");
+                        stompMessageSend.addHeader("content-type", "application/json");
+                        stompMessageSend.addHeader("destination", "/app/android/request");
+                        stompMessageSend.setContent(gson.toJson(messageSend));
+                        client.sendMessage(stompMessageSend);
                         break;
                     case "UPDATE_LOCATION":
                         Thread t = new Thread() {
@@ -83,17 +88,19 @@ public class WebSocketService extends Service {
                         break;
                 }
             }
-        });
-        String socketUrl = ConfigHelper.getConfigValue(context, "socket_url");
-        client.connect(socketUrl);
+        };
 
+        String socketUrl = ConfigHelper.getConfigValue(this, "socket_url");
+        client.setAuthorizationToken(new TokenHelper().getTokenFromMemory(context));
+        client.subscribe("/user/topic/android");
+        client.subscribe("/topic/android");
+        client.connect(socketUrl);
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(client != null) client.disconnect();
 
         Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartWebSocket");
         sendBroadcast(broadcastIntent);

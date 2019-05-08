@@ -1,4 +1,4 @@
-package com.github.duc010298.android.springbootwebsocketclient;
+package com.github.duc010298.android.websocket;
 
 import java.util.HashMap;
 import java.util.Map;
