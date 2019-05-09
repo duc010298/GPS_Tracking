@@ -53,7 +53,7 @@ public class WebSocketService extends Service {
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
                 t.printStackTrace();
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -94,6 +94,8 @@ public class WebSocketService extends Service {
                         };
                         t.start();
                         break;
+
+                        //TODO: command call stop all service and logout
                 }
             }
         };
