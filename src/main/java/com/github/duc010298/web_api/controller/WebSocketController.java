@@ -112,13 +112,6 @@ public class WebSocketController {
 		simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", customAppMessage);
 	}
 	
-	@MessageMapping("/android/pong")
-	public void androidPongRequest(@Payload String content, Principal principal) {
-		//Android send request to server
-		String username = principal.getName();
-		System.out.print(new Date() + " : " + username + " : " + content);
-	}
-	
 	private boolean checkUserOwnsDevice(String username, String imei) {
 		if(username == null || imei == null) return false;
 		Device device = deviceRepository.findByImei(imei);
