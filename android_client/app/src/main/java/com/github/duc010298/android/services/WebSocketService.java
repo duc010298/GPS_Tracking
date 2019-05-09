@@ -122,7 +122,6 @@ public class WebSocketService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        client.getWebSocket().close(1000, null);
         Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartWebSocket");
         sendBroadcast(broadcastIntent);
     }
