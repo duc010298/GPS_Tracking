@@ -58,6 +58,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.devicesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteCurrentDeviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -121,7 +123,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.programToolStripMenuItem,
-            this.settingToolStripMenuItem});
+            this.settingToolStripMenuItem,
+            this.devicesToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1107, 24);
@@ -157,7 +160,7 @@
             this.currentLocationToolStripMenuItem,
             this.routesToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(105, 22);
             this.toolStripMenuItem1.Text = "Mode";
             // 
             // currentLocationToolStripMenuItem
@@ -165,14 +168,14 @@
             this.currentLocationToolStripMenuItem.Checked = true;
             this.currentLocationToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.currentLocationToolStripMenuItem.Name = "currentLocationToolStripMenuItem";
-            this.currentLocationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentLocationToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.currentLocationToolStripMenuItem.Text = "Current Location";
             this.currentLocationToolStripMenuItem.Click += new System.EventHandler(this.CurrentLocationToolStripMenuItem_Click);
             // 
             // routesToolStripMenuItem
             // 
             this.routesToolStripMenuItem.Name = "routesToolStripMenuItem";
-            this.routesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.routesToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.routesToolStripMenuItem.Text = "History";
             this.routesToolStripMenuItem.Click += new System.EventHandler(this.HistoryToolStripMenuItem_Click);
             // 
@@ -381,6 +384,21 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Device name:";
             // 
+            // devicesToolStripMenuItem
+            // 
+            this.devicesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteCurrentDeviceToolStripMenuItem});
+            this.devicesToolStripMenuItem.Name = "devicesToolStripMenuItem";
+            this.devicesToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.devicesToolStripMenuItem.Text = "Devices";
+            // 
+            // deleteCurrentDeviceToolStripMenuItem
+            // 
+            this.deleteCurrentDeviceToolStripMenuItem.Name = "deleteCurrentDeviceToolStripMenuItem";
+            this.deleteCurrentDeviceToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.deleteCurrentDeviceToolStripMenuItem.Text = "Delete current device";
+            this.deleteCurrentDeviceToolStripMenuItem.Click += new System.EventHandler(this.DeleteCurrentDeviceToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -439,5 +457,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem currentLocationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem routesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem devicesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteCurrentDeviceToolStripMenuItem;
     }
 }

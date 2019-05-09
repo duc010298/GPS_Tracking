@@ -32,6 +32,10 @@ public class WebSocketClient extends WebSocketListener {
         client.dispatcher().executorService().shutdown();
     }
 
+    public WebSocket getWebSocket() {
+        return webSocket;
+    }
+
     public void setAuthorizationToken(String authorizationToken) {
         this.authorizationToken = authorizationToken;
     }

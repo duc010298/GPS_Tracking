@@ -420,5 +420,33 @@ namespace winform_client
             CleanGmap();
             MarkedAllLocation();
         }
+
+        private void DeleteCurrentDeviceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string data = listBox1.GetItemText(listBox1.SelectedItem);
+            if (String.IsNullOrEmpty(data))
+            {
+                MessageBox.Show("Failed to send Shutdown command, no device selected", "Take an error!", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            };
+            DialogResult dialogResult = MessageBox.Show("This operation cannot be undone, do you want to delete the device?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (dialogResult == DialogResult.No) return;
+
+            string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
+            string imei = arrayValue[1];
+
+            CustomAppMessage appMessage = new CustomAppMessage();
+            appMessage.command = "SHUTDOWN_ALL";
+            appMessage.imei = imei;
+
+            string json = JsonConvert.SerializeObject(appMessage);
+
+            var broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
+
+            MessageBox.Show("Send Shutdown command successfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 }
