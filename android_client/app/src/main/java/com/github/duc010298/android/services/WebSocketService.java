@@ -3,6 +3,8 @@ package com.github.duc010298.android.services;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -38,84 +40,96 @@ public class WebSocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        context = this;
-        client = new WebSocketClient() {
-            @Override public void onClosing(WebSocket webSocket, int code, String reason) {
-                webSocket.close(1000, null);
-                System.out.println("CLOSE: " + code + " " + reason);
+        try {
+            while(!isNetworkAvailable()) {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                stopSelf();
             }
-
-            @Override
-            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                t.printStackTrace();
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                stopSelf();
-            }
-
-            @Override
-            public void onMessage(WebSocket webSocket, String text) {
-                StompMessage message = StompMessageSerializer.deserialize(text);
-                if(!message.getCommand().equals("MESSAGE")) return;
-                String content = message.getContent();
-                Gson gson = new Gson();
-                CustomAppMessage customAppMessage = gson.fromJson(content, CustomAppMessage.class);
-                if(!customAppMessage.getImei().equals(new PhoneInfoHelper().getImei(context))) {
-                    return;
+            context = this;
+            client = new WebSocketClient() {
+                @Override
+                public void onClosing(WebSocket webSocket, int code, String reason) {
+                    webSocket.close(1000, null);
+                    System.out.println("CLOSE: " + code + " " + reason);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    stopSelf();
                 }
 
-                switch (customAppMessage.getCommand()) {
-                    case "UPDATE_INFO":
-                        CustomAppMessage messageSend = new CustomAppMessage();
-                        PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoHelper().getInfoUpdate(context);
-                        messageSend.setCommand("UPDATE_INFO");
-                        messageSend.setImei(customAppMessage.getImei());
-                        messageSend.setContent(phoneInfoUpdate);
-
-                        StompMessage stompMessageSend = new StompMessage("SEND");
-                        stompMessageSend.addHeader("content-type", "application/json");
-                        stompMessageSend.addHeader("destination", "/app/android/request");
-                        stompMessageSend.setContent(gson.toJson(messageSend));
-                        client.sendMessage(stompMessageSend);
-                        break;
-                    case "UPDATE_LOCATION":
-                        Thread t = new Thread() {
-                            @Override
-                            public void run() {
-                                new GetCurrentLocationTask(context);
-                            }
-                        };
-                        t.start();
-                        break;
-                    case "SHUTDOWN_ALL":
-                        TokenHelper tokenHelper = new TokenHelper();
-                        tokenHelper.cleanTokenOnMemory(context);
-
-                        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-                        databaseHelper.cleanDatabase();
-
-                        ServicesHelper servicesHelper = new ServicesHelper();
-                        servicesHelper.stopAllServices(context);
-                        webSocket.close(1000, null);
-                        stopSelf();
+                @Override
+                public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                    t.printStackTrace();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    stopSelf();
                 }
-            }
-        };
 
-        String socketUrl = ConfigHelper.getConfigValue(this, "socket_url");
-        client.setAuthorizationToken(new TokenHelper().getTokenFromMemory(context));
-        client.subscribe("/user/topic/android");
-        client.subscribe("/topic/android");
-        client.connect(socketUrl);
+                @Override
+                public void onMessage(WebSocket webSocket, String text) {
+                    StompMessage message = StompMessageSerializer.deserialize(text);
+                    if (!message.getCommand().equals("MESSAGE")) return;
+                    String content = message.getContent();
+                    Gson gson = new Gson();
+                    CustomAppMessage customAppMessage = gson.fromJson(content, CustomAppMessage.class);
+                    if (!customAppMessage.getImei().equals(new PhoneInfoHelper().getImei(context))) {
+                        return;
+                    }
+
+                    switch (customAppMessage.getCommand()) {
+                        case "UPDATE_INFO":
+                            CustomAppMessage messageSend = new CustomAppMessage();
+                            PhoneInfoUpdate phoneInfoUpdate = new PhoneInfoHelper().getInfoUpdate(context);
+                            messageSend.setCommand("UPDATE_INFO");
+                            messageSend.setImei(customAppMessage.getImei());
+                            messageSend.setContent(phoneInfoUpdate);
+
+                            StompMessage stompMessageSend = new StompMessage("SEND");
+                            stompMessageSend.addHeader("content-type", "application/json");
+                            stompMessageSend.addHeader("destination", "/app/android/request");
+                            stompMessageSend.setContent(gson.toJson(messageSend));
+                            client.sendMessage(stompMessageSend);
+                            break;
+                        case "UPDATE_LOCATION":
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    new GetCurrentLocationTask(context);
+                                }
+                            };
+                            t.start();
+                            break;
+                        case "SHUTDOWN_ALL":
+                            TokenHelper tokenHelper = new TokenHelper();
+                            tokenHelper.cleanTokenOnMemory(context);
+
+                            DatabaseHelper databaseHelper = new DatabaseHelper(context);
+                            databaseHelper.cleanDatabase();
+
+                            ServicesHelper servicesHelper = new ServicesHelper();
+                            servicesHelper.stopAllServices(context);
+                            webSocket.close(1000, null);
+                            stopSelf();
+                    }
+                }
+            };
+
+            String socketUrl = ConfigHelper.getConfigValue(this, "socket_url");
+            client.setAuthorizationToken(new TokenHelper().getTokenFromMemory(context));
+            client.subscribe("/user/topic/android");
+            client.subscribe("/topic/android");
+            client.connect(socketUrl);
+        } catch (Exception e) {
+            stopSelf();
+        }
         return START_STICKY;
     }
 
@@ -124,5 +138,11 @@ public class WebSocketService extends Service {
         super.onDestroy();
         Intent broadcastIntent = new Intent("com.github.duc010298.android.RestartWebSocket");
         sendBroadcast(broadcastIntent);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
