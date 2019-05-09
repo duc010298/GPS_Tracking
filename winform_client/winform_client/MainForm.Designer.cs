@@ -157,7 +157,7 @@
             this.currentLocationToolStripMenuItem,
             this.routesToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(105, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenuItem1.Text = "Mode";
             // 
             // currentLocationToolStripMenuItem
@@ -165,16 +165,16 @@
             this.currentLocationToolStripMenuItem.Checked = true;
             this.currentLocationToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.currentLocationToolStripMenuItem.Name = "currentLocationToolStripMenuItem";
-            this.currentLocationToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.currentLocationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.currentLocationToolStripMenuItem.Text = "Current Location";
             this.currentLocationToolStripMenuItem.Click += new System.EventHandler(this.CurrentLocationToolStripMenuItem_Click);
             // 
             // routesToolStripMenuItem
             // 
             this.routesToolStripMenuItem.Name = "routesToolStripMenuItem";
-            this.routesToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.routesToolStripMenuItem.Text = "Routes";
-            this.routesToolStripMenuItem.Click += new System.EventHandler(this.RoutesToolStripMenuItem_Click);
+            this.routesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.routesToolStripMenuItem.Text = "History";
+            this.routesToolStripMenuItem.Click += new System.EventHandler(this.HistoryToolStripMenuItem_Click);
             // 
             // groupBox1
             // 

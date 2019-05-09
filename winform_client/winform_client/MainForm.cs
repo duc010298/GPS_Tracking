@@ -17,31 +17,37 @@ namespace winform_client
 {
     public partial class MainForm : Form
     {
-        private readonly WebSocket ws;
+        private WebSocket ws;
         private readonly StompMessageSerializer serializer;
-        private readonly string clientId;
-        private ArrayList locationHistories;
+        private readonly ArrayList locationHistories;
         private readonly GMapOverlay gMapOverlay;
         private bool showOnlyCurrentLocation;
+        private bool isLogout;
 
         public MainForm()
         {
             InitializeComponent();
+            isLogout = false;
             locationHistories = new ArrayList();
             gMapOverlay = new GMapOverlay("marker");
             showOnlyCurrentLocation = true;
-
-            ws = new WebSocket(ConfigurationManager.AppSettings["socket-url"]);
             serializer = new StompMessageSerializer();
 
-            ws.OnMessage += ws_OnMessage;
-            ws.OnClose += ws_OnClose;
-            ws.OnOpen += ws_OnOpen;
-            ws.OnError += ws_OnError;
+            ConnectToServer();
+        }
+
+        private void ConnectToServer()
+        {
+            ws = new WebSocket(ConfigurationManager.AppSettings["socket-url"]);
+            ws.OnOpen += Ws_OnOpen;
+            ws.OnMessage += Ws_OnMessage;
+            ws.OnClose += Ws_OnClose;
+            ws.OnError += Ws_OnError;
             ws.Connect();
+        }
 
-            clientId = RandomString(5);
-
+        void Ws_OnOpen(object sender, EventArgs e)
+        {
             var connect = new StompMessage("CONNECT");
             connect["accept-version"] = "1.1";
             connect["heart-beat"] = "10000,10000";
@@ -49,79 +55,13 @@ namespace winform_client
             ws.Send(serializer.Serialize(connect));
 
             var sub = new StompMessage("SUBSCRIBE");
-            sub["id"] = clientId;
+            //This is only random id
+            sub["id"] = "987654";
             sub["destination"] = "/user/topic/manager";
             ws.Send(serializer.Serialize(sub));
         }
 
-        public string RandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            return new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
-        private void LogoutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            StaticToken.token = null;
-            OpenLoginForm();
-        }
-
-        private void OpenLoginForm()
-        {
-            Thread t = new Thread(OpenForm);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-        }
-
-        private void OpenForm()
-        {
-            Action close = () => this.Close();
-            if (InvokeRequired)
-            {
-                Invoke(close);
-            }
-            else
-            {
-                close();
-            }
-            Application.Run(new LoginForm());
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            CleanGmap();
-            txtDeviceName.Text = "Unknown";
-            txtImei.Text = "Unknown";
-            txtLastUpdate.Text = "Unknown";
-            txtNetworkName.Text = "Unknown";
-            txtNetworkType.Text = "Unknown";
-            txtBatteryLevel.Text = "Unknown";
-            txtCharging.Text = "Unknown";
-
-            CustomAppMessage custom = new CustomAppMessage();
-            custom.command = "GET_DEVICE_LIST";
-
-            string json = JsonConvert.SerializeObject(custom);
-
-            var broad = new StompMessage("SEND", json);
-            broad["content-type"] = "application/json";
-            broad["destination"] = "/app/manager";
-            ws.Send(serializer.Serialize(broad));
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            Button1_Click(sender, e);
-        }
-
-        void ws_OnOpen(object sender, EventArgs e)
-        {
-
-        }
-
-        void ws_OnMessage(object sender, MessageEventArgs e)
+        void Ws_OnMessage(object sender, MessageEventArgs e)
         {
             this.BeginInvoke((Action)delegate ()
             {
@@ -130,7 +70,7 @@ namespace winform_client
                 {
                     CustomAppMessage customAppMessage = JsonConvert.DeserializeObject<CustomAppMessage>(msg.Body);
                     string command = customAppMessage.command;
-                    switch(command)
+                    switch (command)
                     {
                         case "GET_DEVICE_LIST":
                             GetDeviceList(customAppMessage);
@@ -158,11 +98,6 @@ namespace winform_client
                 JsonDevice jsonDevice = JsonConvert.DeserializeObject<JsonDevice>(item.ToString());
                 jsonDevices.Add(jsonDevice);
             }
-            processAddListDevice(jsonDevices);
-        }
-
-        private void processAddListDevice(ArrayList jsonDevices)
-        {
             listBox1.Items.Clear();
             foreach (JsonDevice jsonDevice in jsonDevices)
             {
@@ -219,22 +154,87 @@ namespace winform_client
                     locationHistories.Add(jsonLocationHistory);
                 }
             }
-            if(showOnlyCurrentLocation)
+            if (showOnlyCurrentLocation)
             {
                 MarkedLastLocation();
-            } else
+            }
+            else
             {
-                RoutesAllMarker();
+                MarkedAllLocation();
             }
         }
-
-        void ws_OnClose(object sender, CloseEventArgs e)
+        void Ws_OnClose(object sender, CloseEventArgs e)
         {
-
+            if(!isLogout)
+            {
+                Thread.Sleep(3000);
+                ConnectToServer();
+            }
         }
-        void ws_OnError(object sender, ErrorEventArgs e)
+        void Ws_OnError(object sender, ErrorEventArgs e)
         {
-            
+            Thread.Sleep(3000);
+            if (ws.IsAlive)
+            {
+                ws.Close();
+            }
+            ConnectToServer();
+        }
+
+        private void LogoutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            isLogout = true;
+            ws.Close();
+            StaticToken.token = null;
+            OpenLoginForm();
+        }
+
+        private void OpenLoginForm()
+        {
+            Thread t = new Thread(OpenForm);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+        private void OpenForm()
+        {
+            Action close = () => this.Close();
+            if (InvokeRequired)
+            {
+                Invoke(close);
+            }
+            else
+            {
+                close();
+            }
+            Application.Run(new LoginForm());
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            CleanGmap();
+            txtDeviceName.Text = "Unknown";
+            txtImei.Text = "Unknown";
+            txtLastUpdate.Text = "Unknown";
+            txtNetworkName.Text = "Unknown";
+            txtNetworkType.Text = "Unknown";
+            txtBatteryLevel.Text = "Unknown";
+            txtCharging.Text = "Unknown";
+
+            CustomAppMessage custom = new CustomAppMessage();
+            custom.command = "GET_DEVICE_LIST";
+
+            string json = JsonConvert.SerializeObject(custom);
+
+            var broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Button1_Click(sender, e);
         }
 
         private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -334,7 +334,7 @@ namespace winform_client
             gMap.Overlays.Add(gMapOverlay);
         }
 
-        private void RoutesAllMarker()
+        private void MarkedAllLocation()
         {
             if (locationHistories.Count == 0) return;
             InitGmap();
@@ -412,13 +412,13 @@ namespace winform_client
             MarkedLastLocation();
         }
 
-        private void RoutesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void HistoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             currentLocationToolStripMenuItem.Checked = false;
             routesToolStripMenuItem.Checked = true;
             showOnlyCurrentLocation = false;
             CleanGmap();
-            RoutesAllMarker();
+            MarkedAllLocation();
         }
     }
 }

@@ -44,7 +44,7 @@ public class WebSocketService extends Service {
                 webSocket.close(1000, null);
                 System.out.println("CLOSE: " + code + " " + reason);
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -55,7 +55,7 @@ public class WebSocketService extends Service {
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
                 t.printStackTrace();
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
