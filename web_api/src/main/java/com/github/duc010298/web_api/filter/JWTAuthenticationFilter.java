@@ -37,7 +37,6 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		
 		AppUser userInfoInToken = TokenAuthenticationService.getUserInfoFromRequest((HttpServletRequest) request);
 		if (userInfoInToken == null) {
 			chain.doFilter(request, response);
