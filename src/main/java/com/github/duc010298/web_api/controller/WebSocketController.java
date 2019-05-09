@@ -2,6 +2,7 @@ package com.github.duc010298.web_api.controller;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,6 +110,13 @@ public class WebSocketController {
 			return;
 		}
 		simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", customAppMessage);
+	}
+	
+	@MessageMapping("/android/pong")
+	public void androidPongRequest(@Payload String content, Principal principal) {
+		//Android send request to server
+		String username = principal.getName();
+		System.out.print(new Date() + " : " + username + " : " + content);
 	}
 	
 	private boolean checkUserOwnsDevice(String username, String imei) {
