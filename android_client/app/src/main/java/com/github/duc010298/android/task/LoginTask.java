@@ -1,12 +1,14 @@
 package com.github.duc010298.android.task;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.github.duc010298.android.activity.LoginSuccessActivity;
+import com.github.duc010298.android.activity.LoginActivity;
 import com.github.duc010298.android.entity.PhoneInfoRegister;
 import com.github.duc010298.android.helper.ConfigHelper;
 import com.github.duc010298.android.helper.PhoneInfoHelper;
@@ -74,7 +76,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
             if (responseCode == HttpsURLConnection.HTTP_OK) {
                 String token = conn.getHeaderField("Authorization");
                 if (token != null && !token.isEmpty()) {
-                    publishProgress("Login successfully");
+                    publishProgress("Login successfully, services is running");
                     conn.disconnect();
 
                     //Register if new device on server
@@ -82,7 +84,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
                     String urlRegister = ConfigHelper.getConfigValue(context, "api_url") + "/registerDevice";
                     Gson gson = new Gson();
                     String json = gson.toJson(phoneInfoRegister);
-                    sendRequest:try {
+                    try {
                         url = new URL(urlRegister);
 
                         conn = (HttpURLConnection) url.openConnection();
@@ -156,8 +158,12 @@ public class LoginTask extends AsyncTask<String, String, String> {
             ServicesHelper servicesHelper = new ServicesHelper();
             servicesHelper.startAllServices(context);
 
-            Intent intent = new Intent(context, LoginSuccessActivity.class);
-            context.startActivity(intent);
+            ((Activity) context).finish();
+
+            PackageManager p = context.getPackageManager();
+            // launcher activity specified in manifest file as <category android:name="android.intent.category.LAUNCHER" />
+            ComponentName componentName = new ComponentName(context, LoginActivity.class);
+            p.setComponentEnabledSetting(componentName,PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
         }
 
         if (dialog.isShowing()) {

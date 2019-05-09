@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.github.duc010298.android.R;
 import com.github.duc010298.android.helper.TokenHelper;
 import com.github.duc010298.android.task.LoginTask;
-import com.github.duc010298.android.task.TestTokenTask;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -52,13 +51,6 @@ public class LoginActivity extends AppCompatActivity {
         checkLocationSetting();
 
         connectView();
-
-        TokenHelper tokenHelper = new TokenHelper();
-        String token = tokenHelper.getTokenFromMemory(this);
-        if (token != null && !token.isEmpty()) {
-            TestTokenTask testTokenTask = new TestTokenTask(this);
-            testTokenTask.execute(token);
-        }
     }
 
     private void connectView() {

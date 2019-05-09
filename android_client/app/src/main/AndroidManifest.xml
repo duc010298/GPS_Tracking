@@ -20,10 +20,6 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".activity.LoginSuccessActivity"
-            android:noHistory="true" />
-
-        <activity
             android:name=".activity.LoginActivity"
             android:noHistory="true">
             <intent-filter>

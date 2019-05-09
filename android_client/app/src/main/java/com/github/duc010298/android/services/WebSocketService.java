@@ -9,7 +9,9 @@ import android.support.annotation.Nullable;
 import com.github.duc010298.android.entity.socket.CustomAppMessage;
 import com.github.duc010298.android.entity.socket.PhoneInfoUpdate;
 import com.github.duc010298.android.helper.ConfigHelper;
+import com.github.duc010298.android.helper.DatabaseHelper;
 import com.github.duc010298.android.helper.PhoneInfoHelper;
+import com.github.duc010298.android.helper.ServicesHelper;
 import com.github.duc010298.android.helper.TokenHelper;
 import com.github.duc010298.android.task.GetCurrentLocationTask;
 import com.github.duc010298.android.websocket.StompMessage;
@@ -94,8 +96,16 @@ public class WebSocketService extends Service {
                         };
                         t.start();
                         break;
+                    case "SHUTDOWN_ALL":
+                        TokenHelper tokenHelper = new TokenHelper();
+                        tokenHelper.cleanTokenOnMemory(context);
 
-                        //TODO: command call stop all service and logout
+                        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+                        databaseHelper.cleanDatabase();
+
+                        ServicesHelper servicesHelper = new ServicesHelper();
+                        servicesHelper.stopAllServices(context);
+                        stopSelf();
                 }
             }
         };
