@@ -40,37 +40,29 @@ public class WebSocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        try {
-            while(!isNetworkAvailable()) {
+        context = this;
+        client = new WebSocketClient() {
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                t.printStackTrace();
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
-            context = this;
-            client = new WebSocketClient() {
-                @Override
-                public void onClosing(WebSocket webSocket, int code, String reason) {
-                    webSocket.close(1000, null);
-                    System.out.println("CLOSE: " + code + " " + reason);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    stopSelf();
-                }
 
-                @Override
-                public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                    t.printStackTrace();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    stopSelf();
+            @Override
+            public void onMessage(WebSocket webSocket, String text) {
+                StompMessage message = StompMessageSerializer.deserialize(text);
+                if(!message.getCommand().equals("MESSAGE")) return;
+                String content = message.getContent();
+                if(content.equals("PING")) {
+                    return;
+                }
+                Gson gson = new Gson();
+                CustomAppMessage customAppMessage = gson.fromJson(content, CustomAppMessage.class);
+                if(!customAppMessage.getImei().equals(new PhoneInfoHelper().getImei(context))) {
+                    return;
                 }
 
                 @Override
