@@ -2,6 +2,7 @@ package com.github.duc010298.web_api.filter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.FilterChain;
@@ -56,7 +57,8 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 			return;
 		}
 			
-    	if(userInfoOnDB.getTokenActiveAfter().before(userInfoInToken.getTokenActiveAfter())) {
+    	if(userInfoOnDB.getTokenActiveAfter().before(userInfoInToken.getTokenActiveAfter())
+    			|| userInfoInToken.getExpiryDate().after(new Date())) {
     		List<String> roleNames = this.appRoleRepository.getRoleNames(userInfoOnDB.getUserId());
     		List<GrantedAuthority> grantList = new ArrayList<>();
     		if (roleNames != null) {
