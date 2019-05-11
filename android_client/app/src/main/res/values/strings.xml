@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name" translatable="false">GPS Tracking</string>
+    <string name="gps_tracking" translatable="false">GPS Tracking</string>
+    <string name="username">Username:</string>
+    <string name="password">Password:</string>
+    <string name="login">Login</string>
+    <string name="noti1">Username and password cannot be empty</string>
+    <string name="noti2">Location settings are not satisfied</string>
+    <string name="noti3">Device does not support Google Play services</string>
+    <string name="noti4">The application does not have enough permissions</string>
+</resources>
+
