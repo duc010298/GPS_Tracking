@@ -2,7 +2,7 @@ package com.github.duc010298.web_api.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 
@@ -16,7 +16,7 @@ public class Device implements Serializable {
 	private String imei;
 	private String deviceName;
 	private String fcmTokenRegistration;
-	private Timestamp lastUpdate;
+	private Date lastUpdate;
 	private AppUser appUser;
 	private List<LocationHistory> locationHistories;
 
@@ -55,11 +55,11 @@ public class Device implements Serializable {
 
 
 	@Column(name="last_update")
-	public Timestamp getLastUpdate() {
+	public Date getLastUpdate() {
 		return this.lastUpdate;
 	}
 
-	public void setLastUpdate(Timestamp lastUpdate) {
+	public void setLastUpdate(Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 

@@ -2,7 +2,7 @@ package com.github.duc010298.web_api.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,9 +18,9 @@ public class AppUser implements Serializable {
 	private UUID userId;
 	private String email;
 	private String encryptedPassword;
-	private Timestamp expiryDate;
+	private Date expiryDate;
 	private UUID resetPasswordToken;
-	private Timestamp tokenActiveAfter;
+	private Date tokenActiveAfter;
 	private String userName;
 	private List<Device> devices;
 	private List<AppRole> appRoles;
@@ -60,11 +60,11 @@ public class AppUser implements Serializable {
 
 
 	@Column(name="expiry_date")
-	public Timestamp getExpiryDate() {
+	public Date getExpiryDate() {
 		return this.expiryDate;
 	}
 
-	public void setExpiryDate(Timestamp expiryDate) {
+	public void setExpiryDate(Date expiryDate) {
 		this.expiryDate = expiryDate;
 	}
 
@@ -80,11 +80,11 @@ public class AppUser implements Serializable {
 
 
 	@Column(name="token_active_after")
-	public Timestamp getTokenActiveAfter() {
+	public Date getTokenActiveAfter() {
 		return this.tokenActiveAfter;
 	}
 
-	public void setTokenActiveAfter(Timestamp tokenActiveAfter) {
+	public void setTokenActiveAfter(Date tokenActiveAfter) {
 		this.tokenActiveAfter = tokenActiveAfter;
 	}
 

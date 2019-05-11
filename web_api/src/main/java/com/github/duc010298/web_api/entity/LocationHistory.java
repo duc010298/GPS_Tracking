@@ -2,7 +2,8 @@ package com.github.duc010298.web_api.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.sql.Timestamp;
+
+import java.util.Date;
 import java.util.UUID;
 
 
@@ -17,7 +18,7 @@ public class LocationHistory implements Serializable {
 	private UUID locationId;
 	private double latitude;
 	private double longitude;
-	private Timestamp timeTracking;
+	private Date timeTracking;
 	private Device device;
 
 	public LocationHistory() {
@@ -54,11 +55,11 @@ public class LocationHistory implements Serializable {
 
 
 	@Column(name="time_tracking")
-	public Timestamp getTimeTracking() {
+	public Date getTimeTracking() {
 		return this.timeTracking;
 	}
 
-	public void setTimeTracking(Timestamp timeTracking) {
+	public void setTimeTracking(Date timeTracking) {
 		this.timeTracking = timeTracking;
 	}
 
