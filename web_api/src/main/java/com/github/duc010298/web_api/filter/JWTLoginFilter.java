@@ -44,7 +44,9 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         
         AppUser appUserEntity = appUserRepository.findByUserName(username);
 		if (appUserEntity == null) return null;
-		if(appUserEntity.getExpiryDate().after(new Date())) return null;
+		
+		Date expiryDate = appUserEntity.getExpiryDate();
+		if(expiryDate != null && expiryDate.before(new Date())) return null;
 		
         List<String> roleNames = this.appRoleRepository.getRoleNames(appUserEntity.getUserId());
 

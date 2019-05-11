@@ -56,9 +56,10 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 			chain.doFilter(request, response);
 			return;
 		}
-			
-    	if(userInfoOnDB.getTokenActiveAfter().before(userInfoInToken.getTokenActiveAfter())
-    			|| userInfoInToken.getExpiryDate().after(new Date())) {
+    	if(userInfoOnDB.getTokenActiveAfter().before(userInfoInToken.getTokenActiveAfter())) {
+    		Date expiryDate = userInfoInToken.getExpiryDate();
+    		if(expiryDate != null && expiryDate.before(new Date())) return;
+    		
     		List<String> roleNames = this.appRoleRepository.getRoleNames(userInfoOnDB.getUserId());
     		List<GrantedAuthority> grantList = new ArrayList<>();
     		if (roleNames != null) {
