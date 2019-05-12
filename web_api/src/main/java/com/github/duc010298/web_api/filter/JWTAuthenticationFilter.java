@@ -47,12 +47,12 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 		AppUser userInfoOnDB = appUserRepository.findByUserName(userInfoInToken.getUserName());
 		if (userInfoOnDB == null) {
 			//TODO add here
-			String[] temp = ((HttpServletRequest)request).getRequestURL().toString().split("/");
-			if(temp[temp.length-1].equalsIgnoreCase("testToken")) {
-				((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
-				return;
-			}
-			
+//			String[] temp = ((HttpServletRequest)request).getRequestURL().toString().split("/");
+//			if(temp[temp.length-1].equalsIgnoreCase("testToken")) {
+//				((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
+//				return;
+//			}
+			((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
 			chain.doFilter(request, response);
 			return;
 		}
