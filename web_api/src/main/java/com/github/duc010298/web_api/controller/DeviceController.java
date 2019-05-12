@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.duc010298.web_api.entity.AppUser;
 import com.github.duc010298.web_api.entity.Device;
 import com.github.duc010298.web_api.entity.http.PhoneInfo;
+import com.github.duc010298.web_api.entity.http.UpdateFcmTokenRequest;
 import com.github.duc010298.web_api.repository.AppUserRepository;
 import com.github.duc010298.web_api.repository.DeviceRepository;
 
@@ -33,7 +35,7 @@ public class DeviceController {
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, 
 			produces = "text/plain;charset=UTF-8")
-	public ResponseEntity<String> addDevice(@RequestBody PhoneInfo phoneInfo) {
+	public ResponseEntity<String> registerNewDevice(@RequestBody PhoneInfo phoneInfo) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = (String) auth.getPrincipal();
 		AppUser appUser = appUserRepository.findByUserName(username);
@@ -51,6 +53,26 @@ public class DeviceController {
 		device.setLastUpdate(new Date());
 		device.setAppUser(appUser);
 		device.setFcmTokenRegistration(phoneInfo.getFcmTokenRegistration());
+		
+		deviceRepository.save(device);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Register new device successfully");
+	}
+	
+	@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = "text/plain;charset=UTF-8")
+	public ResponseEntity<String> changeFcmToken(@RequestBody UpdateFcmTokenRequest object) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = (String) auth.getPrincipal();
+		AppUser appUser = appUserRepository.findByUserName(username);
+		
+		Device device = deviceRepository.findByImei(object.getImei());
+		if(device == null) {
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Device has not been registered");
+		}
+		if(!device.getAppUser().equals(appUser)) {
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Device is registered for another account");
+		}
+		device.setFcmTokenRegistration(object.getFcmRegistrationToken());
 		
 		deviceRepository.save(device);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Register new device successfully");

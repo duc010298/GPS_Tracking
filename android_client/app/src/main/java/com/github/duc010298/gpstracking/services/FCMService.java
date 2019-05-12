@@ -2,6 +2,7 @@ package com.github.duc010298.gpstracking.services;
 
 import android.util.Log;
 
+import com.github.duc010298.gpstracking.task.UpdateFCMTokenTask;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -9,6 +10,13 @@ import java.util.Map;
 
 public class FCMService extends FirebaseMessagingService {
     private final String TAG = "JSA-FCM";
+    @Override
+    public void onNewToken(String token) {
+        super.onNewToken(token);
+        UpdateFCMTokenTask updateFCMTokenTask = new UpdateFCMTokenTask(this);
+        updateFCMTokenTask.execute(token);
+    }
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
