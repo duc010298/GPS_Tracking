@@ -51,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/ws/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JWTLoginFilter("/login_token", authenticationManager(), appUserRepository, appRoleRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JWTLoginFilter("/rest/login", authenticationManager(), appUserRepository, appRoleRepository), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTAuthenticationFilter(appUserRepository, appRoleRepository), UsernamePasswordAuthenticationFilter.class);
     }
 }
