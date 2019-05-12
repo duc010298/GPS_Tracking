@@ -43,7 +43,7 @@ VALUES ('44260380-cc98-4296-acac-1d57b88b2535', 2);
 CREATE TABLE IF NOT EXISTS device
 (
 	imei char(15) PRIMARY KEY,
-	fcm_token_registration varchar(152) not null,
+	fcm_token_registration varchar(152),
 	user_id uuid NOT null,
 	device_name varchar(100) NOT NULL,
 	last_update timestamp,
