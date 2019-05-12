@@ -2,6 +2,7 @@ package com.github.duc010298.gpstracking.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -24,11 +25,15 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Context context;
     private EditText txtUsername;
     private EditText txtPassword;
     private final long UPDATE_INTERVAL = 600000;
@@ -39,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        context = this;
 
         checkPermission();
 
@@ -143,15 +150,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void doLogin(View view) {
-        String username = txtUsername.getText().toString().trim().toLowerCase();
-        String password = txtPassword.getText().toString().trim().toLowerCase();
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(context, getString(R.string.noti11), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, getString(R.string.noti1), Toast.LENGTH_SHORT).show();
-            return;
-        }
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+                        String username = txtUsername.getText().toString().trim().toLowerCase();
+                        String password = txtPassword.getText().toString().trim().toLowerCase();
 
-        LoginTask loginTask = new LoginTask(this);
-        loginTask.execute(username, password);
+                        if (username.isEmpty() || password.isEmpty()) {
+                            Toast.makeText(context, getString(R.string.noti1), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        LoginTask loginTask = new LoginTask(context);
+                        loginTask.execute(username, password, token);
+                    }
+                });
     }
 }

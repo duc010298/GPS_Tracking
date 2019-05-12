@@ -14,5 +14,6 @@
     <string name="noti8">Login failed, this device is registered for another account</string>
     <string name="noti9">Unknown error</string>
     <string name="noti10">Signing in, please wait</string>
+    <string name="noti11">Error, Could not get Firebase Token</string>
 </resources>
 

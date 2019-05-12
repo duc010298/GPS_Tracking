@@ -13,4 +13,5 @@
     <string name="noti8">Lỗi, thiết bị này đã được đăng kí cho tài khoản khác</string>
     <string name="noti9">Lỗi không xác định</string>
     <string name="noti10">Đang đăng nhập, vui lòng đợi</string>
+    <string name="noti11">Lỗi, không thể nhận được Firebase Token</string>
 </resources>
