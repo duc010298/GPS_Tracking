@@ -27,6 +27,9 @@ public class FCMService extends FirebaseMessagingService {
             Map<String, String> data = remoteMessage.getData();
             String command = data.get("command");
             switch (command) {
+                case "CHECK_ONLINE":
+                    //TODO send pong request
+                    break;
                 case "UPDATE_INFO":
                     UpdateInfoTask updateInfoTask = new UpdateInfoTask(this);
                     updateInfoTask.execute();
