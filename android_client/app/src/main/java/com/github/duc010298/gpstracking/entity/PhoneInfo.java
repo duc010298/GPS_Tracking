@@ -3,6 +3,7 @@ package com.github.duc010298.gpstracking.entity;
 public class PhoneInfo {
     private String imei;
     private String deviceName;
+    private String fcmTokenRegistration;
     private String networkName;
     private String networkType;
     private int batteryLevel;
@@ -22,6 +23,14 @@ public class PhoneInfo {
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
+    }
+
+    public String getFcmTokenRegistration() {
+        return fcmTokenRegistration;
+    }
+
+    public void setFcmTokenRegistration(String fcmTokenRegistration) {
+        this.fcmTokenRegistration = fcmTokenRegistration;
     }
 
     public String getNetworkName() {

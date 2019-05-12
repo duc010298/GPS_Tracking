@@ -44,6 +44,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
     protected String doInBackground(String... strings) {
         String username = strings[0];
         String password = strings[1];
+        String fcmToken = strings[2];
 
         HashMap<String, String> dataPost = new HashMap<>();
         dataPost.put("username", username);
@@ -78,6 +79,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
 
                     //Register if new device on server
                     PhoneInfo phoneInfo = new PhoneInfoHelper().getInfoRegister(context);
+                    phoneInfo.setFcmTokenRegistration(fcmToken);
                     String urlRegister = ConfigHelper.getConfigValue(context, "api_url") + "/devices";
                     Gson gson = new Gson();
                     String json = gson.toJson(phoneInfo);

@@ -50,8 +50,7 @@ public class DeviceController {
 		device.setDeviceName(phoneInfo.getDeviceName());
 		device.setLastUpdate(new Date());
 		device.setAppUser(appUser);
-		//TODO update here
-		device.setFcmTokenRegistration("54878");
+		device.setFcmTokenRegistration(phoneInfo.getFcmTokenRegistration());
 		
 		deviceRepository.save(device);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Register new device successfully");
