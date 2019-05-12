@@ -65,6 +65,7 @@ public class LocationController {
 		device.setLastUpdate(new Date());
 		deviceRepository.save(device);
 		
+		//TODO send websocket here
 //		CustomAppMessage appMessage = new CustomAppMessage();
 //		appMessage.setCommand("LOCATION_UPDATED");
 //		appMessage.setImei(device.getImei());

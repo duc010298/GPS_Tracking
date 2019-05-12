@@ -60,6 +60,7 @@ public class PhoneInfoHelper {
                 || plugged == BatteryManager.BATTERY_PLUGGED_WIRELESS);
 
         PhoneInfo phoneInfo = new PhoneInfo();
+        phoneInfo.setImei(imei);
         phoneInfo.setNetworkName(networkName);
         phoneInfo.setNetworkType(networkType);
         phoneInfo.setBatteryLevel(batteryLevel);

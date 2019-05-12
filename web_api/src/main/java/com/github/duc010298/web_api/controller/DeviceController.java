@@ -77,4 +77,22 @@ public class DeviceController {
 		deviceRepository.save(device);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Register new device successfully");
 	}
+	
+	@PostMapping(path = "/update_info", consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = "text/plain;charset=UTF-8")
+	public ResponseEntity<String> updateDeviceInfo(@RequestBody PhoneInfo phoneInfo) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = (String) auth.getPrincipal();
+		AppUser appUser = appUserRepository.findByUserName(username);
+		
+		Device device = deviceRepository.findByImei(phoneInfo.getImei());
+		if(device == null) {
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Device has not been registered");
+		}
+		if(!device.getAppUser().equals(appUser)) {
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Device is registered for another account");
+		}
+		//TODO send websocket here
+		return ResponseEntity.status(HttpStatus.OK).body("Update device info success");
+	}
 }

@@ -1,15 +1,19 @@
 package com.github.duc010298.gpstracking.services;
 
-import android.util.Log;
+import android.content.Context;
 
+import com.github.duc010298.gpstracking.helper.DatabaseHelper;
+import com.github.duc010298.gpstracking.helper.ServicesHelper;
+import com.github.duc010298.gpstracking.task.GetCurrentLocationTask;
 import com.github.duc010298.gpstracking.task.UpdateFCMTokenTask;
+import com.github.duc010298.gpstracking.task.UpdateInfoTask;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
 public class FCMService extends FirebaseMessagingService {
-    private final String TAG = "JSA-FCM";
+    Context context = this;
     @Override
     public void onNewToken(String token) {
         super.onNewToken(token);
@@ -19,16 +23,33 @@ public class FCMService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
-        if (remoteMessage.getNotification() != null) {
-            Log.e(TAG, "Title: " + remoteMessage.getNotification().getTitle());
-            Log.e(TAG, "Body: " + remoteMessage.getNotification().getBody());
-        }
-
         if (remoteMessage.getData().size() > 0) {
             Map<String, String> data = remoteMessage.getData();
-            String myCustomKey = data.get("key0");
-            Log.e(TAG, "Data: " + myCustomKey);
+            String command = data.get("command");
+            switch (command) {
+                case "UPDATE_INFO":
+                    UpdateInfoTask updateInfoTask = new UpdateInfoTask(this);
+                    updateInfoTask.execute();
+                    break;
+                case "UPDATE_LOCATION":
+                    Thread t = new Thread() {
+                        @Override
+                        public void run() {
+                            new GetCurrentLocationTask(context);
+                        }
+                    };
+                    t.start();
+                    break;
+                case "TURN_OFF_SERVICES":
+                    DatabaseHelper databaseHelper = new DatabaseHelper(this);
+                    databaseHelper.cleanDatabase();
+
+                    new ServicesHelper().stopAllServices(this);
+                    break;
+                case "TURN_ON_SERVICES":
+                    new ServicesHelper().startAllServices(this);
+                    break;
+            }
         }
     }
 }
