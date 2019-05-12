@@ -1,31 +1,24 @@
 package com.github.duc010298.gpstracking.entity;
 
+import java.util.ArrayList;
+
 public class LocationHistory {
-    private long time;
-    private double latitude;
-    private double longitude;
+    private String imei;
+    private ArrayList<CustomLocation> customLocations;
 
-    public long getTime() {
-        return time;
+    public String getImei() {
+        return imei;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public void setImei(String imei) {
+        this.imei = imei;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public ArrayList<CustomLocation> getCustomLocations() {
+        return customLocations;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setCustomLocations(ArrayList<CustomLocation> customLocations) {
+        this.customLocations = customLocations;
     }
 }

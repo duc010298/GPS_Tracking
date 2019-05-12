@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 
-import com.github.duc010298.gpstracking.entity.LocationHistory;
+import com.github.duc010298.gpstracking.entity.CustomLocation;
 
 import java.util.ArrayList;
 
@@ -48,8 +48,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public ArrayList<LocationHistory> getHistory() {
-        ArrayList<LocationHistory> locationHistories = new ArrayList<>();
+    public ArrayList<CustomLocation> getHistory() {
+        ArrayList<CustomLocation> customLocations = new ArrayList<>();
 
         String query = "SELECT time_tracking, latitude, longitude FROM Location_History";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -57,36 +57,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if(cursor.moveToFirst()) {
             do {
-                LocationHistory locationHistory = new LocationHistory();
+                CustomLocation locationHistory = new CustomLocation();
                 locationHistory.setTime(Long.parseLong(cursor.getString(0)));
                 locationHistory.setLatitude(Double.parseDouble(cursor.getString(1)));
                 locationHistory.setLongitude(Double.parseDouble(cursor.getString(2)));
 
-                locationHistories.add(locationHistory);
+                customLocations.add(locationHistory);
             } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
 
-        return locationHistories;
+        return customLocations;
     }
 
-    public LocationHistory getLatestLocation() {
-        LocationHistory locationHistory = null;
+    public CustomLocation getLatestLocation() {
+        CustomLocation customLocation = null;
         String getLatestLocationQuery = "SELECT time_tracking, latitude, longitude FROM Location_History ORDER BY time_tracking DESC LIMIT 1";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(getLatestLocationQuery, null);
         if(cursor.moveToFirst()) {
-            locationHistory = new LocationHistory();
-            locationHistory.setTime(Long.parseLong(cursor.getString(0)));
-            locationHistory.setLatitude(Double.parseDouble(cursor.getString(1)));
-            locationHistory.setLongitude(Double.parseDouble(cursor.getString(2)));
+            customLocation = new CustomLocation();
+            customLocation.setTime(Long.parseLong(cursor.getString(0)));
+            customLocation.setLatitude(Double.parseDouble(cursor.getString(1)));
+            customLocation.setLongitude(Double.parseDouble(cursor.getString(2)));
         }
 
         cursor.close();
         db.close();
 
-        return locationHistory;
+        return customLocation;
     }
 
     public void deleteLatest() {

@@ -28,6 +28,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".broadcast.RestartTrackingLocation"
+            android:enabled="true"
+            android:exported="true"
+            android:label="RestartServiceWhenStopped">
+            <intent-filter>
+                <action android:name="com.github.duc010298.gpstracking.RestartTracking" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".services.TrackingLocationService"
+            android:enabled="true" />
+
+        <service
+            android:name=".services.ScheduleSendLocationHistory"
+            android:enabled="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>
