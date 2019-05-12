@@ -2,7 +2,7 @@ package com.github.duc010298.gpstracking.entity;
 
 import java.util.ArrayList;
 
-public class LocationHistory {
+public class LocationHistoryRequest {
     private String imei;
     private ArrayList<CustomLocation> customLocations;
 

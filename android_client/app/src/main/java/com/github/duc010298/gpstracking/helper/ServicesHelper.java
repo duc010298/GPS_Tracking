@@ -57,11 +57,9 @@ public class ServicesHelper {
             ComponentName componentName = new ComponentName(context, ScheduleSendLocationHistory.class);
             JobInfo.Builder builder = new JobInfo.Builder(101, componentName);
 
-            //90 minutes
             builder
                     .setPeriodic(5400000)
                     .setPersisted(true);
-
 
             JobInfo jobInfo = builder.build();
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -77,5 +75,15 @@ public class ServicesHelper {
         edit.apply();
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         jobScheduler.cancelAll();
+    }
+
+    public void startAllServices(Context context) {
+        startTrackingLocationService(context);
+        startJobServiceSendLocationHistory(context);
+    }
+
+    public void stopAllServices(Context context) {
+        stopTrackingLocationService(context);
+        stopJobServiceSendLocationHistory(context);
     }
 }

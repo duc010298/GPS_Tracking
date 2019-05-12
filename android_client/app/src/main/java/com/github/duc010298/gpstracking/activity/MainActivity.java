@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.github.duc010298.gpstracking.R;
+import com.github.duc010298.gpstracking.task.LoginTask;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-//        LoginTask loginTask = new LoginTask(this);
-//        loginTask.execute(username, password);
+        LoginTask loginTask = new LoginTask(this);
+        loginTask.execute(username, password);
     }
 }

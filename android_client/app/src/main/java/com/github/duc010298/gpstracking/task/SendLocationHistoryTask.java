@@ -4,10 +4,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.github.duc010298.gpstracking.entity.CustomLocation;
-import com.github.duc010298.gpstracking.entity.LocationHistory;
+import com.github.duc010298.gpstracking.entity.LocationHistoryRequest;
 import com.github.duc010298.gpstracking.helper.ConfigHelper;
 import com.github.duc010298.gpstracking.helper.DatabaseHelper;
 import com.github.duc010298.gpstracking.helper.PhoneInfoHelper;
+import com.github.duc010298.gpstracking.helper.ServicesHelper;
 import com.github.duc010298.gpstracking.helper.TokenHelper;
 import com.google.gson.Gson;
 
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 public class SendLocationHistoryTask extends AsyncTask<Void, Void, Void> {
     private final Context context;
 
-    public SendLocationHistoryTask(Context context) {
+    protected SendLocationHistoryTask(Context context) {
         this.context = context;
     }
 
@@ -35,16 +36,16 @@ public class SendLocationHistoryTask extends AsyncTask<Void, Void, Void> {
         TokenHelper tokenHelper = new TokenHelper();
         String token = tokenHelper.getTokenFromMemory(context);
 
-        LocationHistory locationHistory = new LocationHistory();
-        locationHistory.setImei(new PhoneInfoHelper().getImei(context));
-        locationHistory.setCustomLocations(customLocationList);
+        LocationHistoryRequest locationHistoryRequest = new LocationHistoryRequest();
+        locationHistoryRequest.setImei(new PhoneInfoHelper().getImei(context));
+        locationHistoryRequest.setCustomLocations(customLocationList);
 
         Gson gson = new Gson();
-        String json = gson.toJson(locationHistory);
+        String json = gson.toJson(locationHistoryRequest);
 
         HttpURLConnection conn = null;
 
-        sendRequest:try {
+        try {
             String urlSendLocationHistory = ConfigHelper.getConfigValue(context, "api_url") + "/locations";
             URL url = new URL(urlSendLocationHistory);
 
@@ -61,30 +62,15 @@ public class SendLocationHistoryTask extends AsyncTask<Void, Void, Void> {
             }
 
             int responseCode = conn.getResponseCode();
-//            if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
-//                tokenHelper.cleanTokenOnMemory(context);
-//                ServicesHelper servicesHelper = new ServicesHelper();
-//                servicesHelper.stopAllServices(context);
-//                break sendRequest;
-//            }
-//            if (responseCode == HttpsURLConnection.HTTP_OK) {
-//                String responseBody;
-//                try(BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-//                    String inputLine;
-//                    StringBuilder response = new StringBuilder();
-//                    while ((inputLine = br.readLine()) != null) {
-//                        response.append(inputLine);
-//                    }
-//                    responseBody = response.toString();
-//                }
-//                if(responseBody.equals("Success")) {
-//                    databaseHelper.cleanDatabase();
-//                } else {
-//                    tokenHelper.cleanTokenOnMemory(context);
-//                    ServicesHelper servicesHelper = new ServicesHelper();
-//                    servicesHelper.stopAllServices(context);
-//                }
-//            }
+            if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                tokenHelper.cleanTokenOnMemory(context);
+                ServicesHelper servicesHelper = new ServicesHelper();
+                servicesHelper.stopAllServices(context);
+                return null;
+            }
+            if(responseCode == HttpURLConnection.HTTP_CREATED) {
+                databaseHelper.cleanDatabase();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
