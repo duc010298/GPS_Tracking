@@ -45,7 +45,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button2 = new System.Windows.Forms.Button();
             this.txtCharging = new System.Windows.Forms.Label();
             this.txtBatteryLevel = new System.Windows.Forms.Label();
             this.txtNetworkType = new System.Windows.Forms.Label();
@@ -60,6 +59,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.gMap = new GMap.NET.WindowsForms.GMapControl();
             Name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -210,6 +210,9 @@
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.ListView1_SelectedIndexChanged);
+            this.listView1.Click += new System.EventHandler(this.ListView1_Click);
+            this.listView1.Leave += new System.EventHandler(this.ListView1_Leave);
             // 
             // groupBox2
             // 
@@ -235,16 +238,6 @@
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Device Information";
-            // 
-            // button2
-            // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Image = global::winform_client.Properties.Resources.refresh1;
-            this.button2.Location = new System.Drawing.Point(300, 19);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(32, 32);
-            this.button2.TabIndex = 2;
-            this.button2.UseVisualStyleBackColor = true;
             // 
             // txtCharging
             // 
@@ -378,6 +371,16 @@
             this.label2.Size = new System.Drawing.Size(73, 13);
             this.label2.TabIndex = 14;
             this.label2.Text = "Device name:";
+            // 
+            // button2
+            // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button2.Image = global::winform_client.Properties.Resources.refresh1;
+            this.button2.Location = new System.Drawing.Point(300, 19);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(32, 32);
+            this.button2.TabIndex = 2;
+            this.button2.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
