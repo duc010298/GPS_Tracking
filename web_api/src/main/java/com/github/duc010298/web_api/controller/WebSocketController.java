@@ -60,14 +60,21 @@ public class WebSocketController {
 				deviceMessage.setImei(d.getImei());
 				deviceMessage.setLastUpdate(d.getLastUpdate());
 				deviceMessages.add(deviceMessage);
-				
-				sendToFcmCheckOnline(d.getFcmTokenRegistration());
 			}
 			
 			AppMessage custom = new AppMessage();
 			custom.setCommand("GET_DEVICE_LIST");
 			custom.setContent(deviceMessages);
 			simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", custom);
+			return;
+		}
+		if(appMessage.getCommand().equals("CHECK_ONLINE")) {
+			AppUser appUser = appUserRepository.findByUserName(username);
+			List<Device> devices = deviceRepository.findAllByAppUser(appUser);
+			for(Device d: devices) {
+				sendToFcmCheckOnline(d.getFcmTokenRegistration());
+			}
+			return;
 		}
 	}
 	
@@ -76,7 +83,7 @@ public class WebSocketController {
 	 */
 	public void sendToFcmCheckOnline(String tokenRegistration) {
 		JSONObject body = new JSONObject();
-	    body.put("to", "tokenRegistration");
+	    body.put("to", tokenRegistration);
 	    
 	    JSONObject data = new JSONObject();
 	    data.put("command", "CHECK_ONLINE");
@@ -89,7 +96,7 @@ public class WebSocketController {
 	    CompletableFuture.allOf(pushNotification).join();
 	    
 	    try {
-			pushNotification.get();
+	    	pushNotification.get();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (ExecutionException e) {

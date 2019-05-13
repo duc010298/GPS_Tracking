@@ -93,6 +93,15 @@ namespace winform_client
                 string[] row = { deviceMessage.deviceName, deviceMessage.imei, "Offline" };
                 listView1.Items.Add(new ListViewItem(row));
             }
+            appMessage = new AppMessage();
+            appMessage.command = "CHECK_ONLINE";
+
+            string json = JsonConvert.SerializeObject(appMessage);
+
+            var broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
         }
         private void SetDeviceOnline(AppMessage appMessage)
         {
@@ -101,7 +110,7 @@ namespace winform_client
             {
                 if(i.SubItems[1].Text.Equals(imei))
                 {
-                    i.SubItems[1].Text = "Online";
+                    i.SubItems[2].Text = "Online";
                 }
             }
         }

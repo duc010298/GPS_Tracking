@@ -5,6 +5,7 @@ import android.content.Context;
 import com.github.duc010298.gpstracking.helper.DatabaseHelper;
 import com.github.duc010298.gpstracking.helper.ServicesHelper;
 import com.github.duc010298.gpstracking.task.GetCurrentLocationTask;
+import com.github.duc010298.gpstracking.task.SendRequestDeviceOnline;
 import com.github.duc010298.gpstracking.task.UpdateFCMTokenTask;
 import com.github.duc010298.gpstracking.task.UpdateInfoTask;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -28,7 +29,8 @@ public class FCMService extends FirebaseMessagingService {
             String command = data.get("command");
             switch (command) {
                 case "CHECK_ONLINE":
-                    //TODO send pong request
+                    SendRequestDeviceOnline sendRequestDeviceOnline = new SendRequestDeviceOnline(this);
+                    sendRequestDeviceOnline.execute();
                     break;
                 case "UPDATE_INFO":
                     UpdateInfoTask updateInfoTask = new UpdateInfoTask(this);
