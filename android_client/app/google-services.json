@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "795768923402",
+    "firebase_url": "https://gpstrackingsystem-27c17.firebaseio.com",
+    "project_id": "gpstrackingsystem-27c17",
+    "storage_bucket": "gpstrackingsystem-27c17.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:795768923402:android:3b5e0c58bc71c269",
+        "android_client_info": {
+          "package_name": "com.github.duc010298.gpstracking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "795768923402-61901404qd14smuqaks07fau5fl1u99j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.duc010298.gpstracking",
+            "certificate_hash": "49d4f4de1b313684bca6eb752ca774716d9ba22b"
+          }
+        },
+        {
+          "client_id": "795768923402-37poonunsdi6s90psi3vgh0rbg8imrg3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOmqg9myujSM3m9lj1gnER9Fnbptf1L74"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "795768923402-37poonunsdi6s90psi3vgh0rbg8imrg3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

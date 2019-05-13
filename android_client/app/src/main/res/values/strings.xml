@@ -1,7 +1,19 @@
 <resources>
-    <string name="app_name">Android</string>
-    <string name="gps_tracking">GPS Tracking</string>
+    <string name="app_name" translatable="false">Android</string>
+    <string name="gps_tracking" translatable="false">GPS Tracking</string>
     <string name="username">Username:</string>
     <string name="password">Password:</string>
     <string name="login">Login</string>
+    <string name="noti1">Username and password cannot be empty</string>
+    <string name="noti2">Location settings are not satisfied</string>
+    <string name="noti3">Device does not support Google Play services</string>
+    <string name="noti4">The application does not have enough permissions</string>
+    <string name="noti5">Login failed, cannot connect to server</string>
+    <string name="noti6">Login failed, username or password incorrect</string>
+    <string name="noti7">Login successfully, services is running</string>
+    <string name="noti8">Login failed, this device is registered for another account</string>
+    <string name="noti9">Unknown error</string>
+    <string name="noti10">Signing in, please wait</string>
+    <string name="noti11">Error, Could not get Firebase Token</string>
 </resources>
+

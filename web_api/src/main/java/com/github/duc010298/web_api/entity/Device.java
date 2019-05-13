@@ -2,7 +2,6 @@ package com.github.duc010298.web_api.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
-
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +15,7 @@ public class Device implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String imei;
 	private String deviceName;
+	private String fcmTokenRegistration;
 	private Date lastUpdate;
 	private AppUser appUser;
 	private List<LocationHistory> locationHistories;
@@ -43,8 +43,17 @@ public class Device implements Serializable {
 		this.deviceName = deviceName;
 	}
 
-	
-	@Temporal(TemporalType.TIMESTAMP)
+
+	@Column(name="fcm_token_registration")
+	public String getFcmTokenRegistration() {
+		return this.fcmTokenRegistration;
+	}
+
+	public void setFcmTokenRegistration(String fcmTokenRegistration) {
+		this.fcmTokenRegistration = fcmTokenRegistration;
+	}
+
+
 	@Column(name="last_update")
 	public Date getLastUpdate() {
 		return this.lastUpdate;

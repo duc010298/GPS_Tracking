@@ -2,6 +2,7 @@ package com.github.duc010298.web_api.filter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.FilterChain;
@@ -45,17 +46,20 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 		
 		AppUser userInfoOnDB = appUserRepository.findByUserName(userInfoInToken.getUserName());
 		if (userInfoOnDB == null) {
-			String[] temp = ((HttpServletRequest)request).getRequestURL().toString().split("/");
-			if(temp[temp.length-1].equalsIgnoreCase("testToken")) {
-				((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
-				return;
-			}
-			
+			//TODO add here
+//			String[] temp = ((HttpServletRequest)request).getRequestURL().toString().split("/");
+//			if(temp[temp.length-1].equalsIgnoreCase("testToken")) {
+//				((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
+//				return;
+//			}
+			((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
 			chain.doFilter(request, response);
 			return;
 		}
-			
     	if(userInfoOnDB.getTokenActiveAfter().before(userInfoInToken.getTokenActiveAfter())) {
+    		Date expiryDate = userInfoInToken.getExpiryDate();
+    		if(expiryDate != null && expiryDate.before(new Date())) return;
+    		
     		List<String> roleNames = this.appRoleRepository.getRoleNames(userInfoOnDB.getUserId());
     		List<GrantedAuthority> grantList = new ArrayList<>();
     		if (roleNames != null) {

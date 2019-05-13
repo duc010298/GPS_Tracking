@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{826D6D89-4E63-4B62-8F41-9FD95138E00A}</ProjectGuid>
+    <ProjectGuid>{35427E79-C2BB-4888-9A9E-53DAAFDBE06D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>winform_client</RootNamespace>
     <AssemblyName>GPS Tracking Manager</AssemblyName>
@@ -31,9 +31,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>icon_winform.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GMap.NET.Core, Version=1.7.5.0, Culture=neutral, PublicKeyToken=b85b9027b614afef, processorArchitecture=MSIL">
@@ -62,10 +59,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="entity\CustomAppMessage.cs" />
-    <Compile Include="entity\JsonDevice.cs" />
-    <Compile Include="entity\JsonLocationHistory.cs" />
-    <Compile Include="entity\PhoneInfoUpdate.cs" />
+    <Compile Include="Entity\AppMessage.cs" />
+    <Compile Include="Entity\DeviceMessage.cs" />
+    <Compile Include="Entity\LocationMessage.cs" />
+    <Compile Include="Entity\PhoneInfoMessage.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -81,7 +78,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StaticToken.cs" />
-    <Compile Include="Stomp\StompCommand.cs" />
     <Compile Include="Stomp\StompMessage.cs" />
     <Compile Include="Stomp\StompMessageSerializer.cs" />
     <EmbeddedResource Include="LoginForm.resx">
@@ -116,9 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\refresh1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="icon_winform.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

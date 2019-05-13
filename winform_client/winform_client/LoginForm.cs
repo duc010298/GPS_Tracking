@@ -40,7 +40,7 @@ namespace winform_client
 
             try
             {
-                var response = client.PostAsync("loginToken", formContent).Result;
+                var response = client.PostAsync("login", formContent).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     StaticToken.token = response.Headers.GetValues("Authorization").FirstOrDefault();
@@ -91,10 +91,11 @@ namespace winform_client
         {
             if (e.KeyData == Keys.Enter)
             {
-                if(String.IsNullOrEmpty(textBox2.Text.Trim()))
+                if (String.IsNullOrEmpty(textBox2.Text.Trim()))
                 {
                     textBox2.Focus();
-                } else
+                }
+                else
                 {
                     ButtonLogin_Click(sender, e);
                 }

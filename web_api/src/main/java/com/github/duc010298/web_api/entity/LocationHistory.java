@@ -1,10 +1,10 @@
 package com.github.duc010298.web_api.entity;
 
 import java.io.Serializable;
+import javax.persistence.*;
+
 import java.util.Date;
 import java.util.UUID;
-
-import javax.persistence.*;
 
 
 /**
@@ -13,7 +13,6 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="location_history")
-@NamedQuery(name="LocationHistory.findAll", query="SELECT l FROM LocationHistory l")
 public class LocationHistory implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private UUID locationId;
@@ -54,8 +53,7 @@ public class LocationHistory implements Serializable {
 		this.longitude = longitude;
 	}
 
-	
-	@Temporal(TemporalType.TIMESTAMP)
+
 	@Column(name="time_tracking")
 	public Date getTimeTracking() {
 		return this.timeTracking;

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login">Đăng nhập</string>
+    <string name="password">Mật khẩu:</string>
+    <string name="username">Tên đăng nhập:</string>
+    <string name="noti1">Không được để trống tên đăng nhập và mật khẩu</string>
+    <string name="noti2">Cài đặt vị trí chưa chính xác</string>
+    <string name="noti3">Thiết bị không hỗ trợ Dịch vụ Google Play</string>
+    <string name="noti4">Ứng dụng chưa được cấp đủ quyền</string>
+    <string name="noti5">Đăng nhập thất bại, không thể kết nối đến máy chủ</string>
+    <string name="noti6">Đăng nhập thất bại, tên đăng nhập hoặc mật khẩu không đúng</string>
+    <string name="noti7">Đăng nhập thành công, các dịch vụ đã được khởi chạy</string>
+    <string name="noti8">Lỗi, thiết bị này đã được đăng kí cho tài khoản khác</string>
+    <string name="noti9">Lỗi không xác định</string>
+    <string name="noti10">Đang đăng nhập, vui lòng đợi</string>
+    <string name="noti11">Lỗi, không thể nhận được Firebase Token</string>
+</resources>

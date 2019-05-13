@@ -5,12 +5,12 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Configuration;
+using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using WebSocketSharp;
-using winform_client.entity;
+using winform_client.Entity;
 using winform_client.Stomp;
 
 namespace winform_client
@@ -23,7 +23,6 @@ namespace winform_client
         private readonly GMapOverlay gMapOverlay;
         private bool showOnlyCurrentLocation;
         private bool isLogout;
-
         public MainForm()
         {
             InitializeComponent();
@@ -60,112 +59,113 @@ namespace winform_client
             sub["destination"] = "/user/topic/manager";
             ws.Send(serializer.Serialize(sub));
         }
-
         void Ws_OnMessage(object sender, MessageEventArgs e)
         {
             this.BeginInvoke((Action)delegate ()
             {
                 StompMessage msg = serializer.Deserialize(e.Data);
-                if (msg.Command == StompFrame.MESSAGE)
+                if (msg.Command == "MESSAGE")
                 {
-                    CustomAppMessage customAppMessage = JsonConvert.DeserializeObject<CustomAppMessage>(msg.Body);
-                    string command = customAppMessage.command;
+                    AppMessage appMessage = JsonConvert.DeserializeObject<AppMessage>(msg.Body);
+                    string command = appMessage.command;
                     switch (command)
                     {
                         case "GET_DEVICE_LIST":
-                            GetDeviceList(customAppMessage);
+                            GetDeviceList(appMessage);
                             break;
-                        case "UPDATE_INFO":
-                            UpdateInfo(customAppMessage);
+                        case "DEVICE_ONLINE":
+                            SetDeviceOnline(appMessage);
                             break;
                         case "LOCATION_UPDATED":
-                            LocationUpdated(customAppMessage);
+                            LocationUpdated(appMessage);
                             break;
-                        case "GET_LOCATION":
-                            GetLocation(customAppMessage);
+                        case "UPDATE_INFO":
+                            UpdateInfo(appMessage);
                             break;
                     }
                 }
             });
         }
-
-        private void GetDeviceList(CustomAppMessage customAppMessage)
+        private void GetDeviceList(AppMessage appMessage)
         {
-            ArrayList jsonDevices = new ArrayList();
-            ArrayList arrayList = JsonConvert.DeserializeObject<ArrayList>(customAppMessage.content.ToString());
+            ArrayList deviceMessages = new ArrayList();
+            ArrayList arrayList = JsonConvert.DeserializeObject<ArrayList>(appMessage.content.ToString());
             foreach (var item in arrayList)
             {
-                JsonDevice jsonDevice = JsonConvert.DeserializeObject<JsonDevice>(item.ToString());
-                jsonDevices.Add(jsonDevice);
+                DeviceMessage deviceMessage = JsonConvert.DeserializeObject<DeviceMessage>(item.ToString());
+                deviceMessages.Add(deviceMessage);
             }
-            listBox1.Items.Clear();
-            foreach (JsonDevice jsonDevice in jsonDevices)
+            listView1.Items.Clear();
+            listView1.Refresh();
+            foreach (DeviceMessage deviceMessage in deviceMessages)
             {
-                string str = jsonDevice.deviceName + " | " + jsonDevice.imei;
-                listBox1.Items.Add(str);
+                string[] row = { deviceMessage.deviceName, deviceMessage.imei, "Offline" };
+                listView1.Items.Add(new ListViewItem(row));
             }
+            appMessage = new AppMessage();
+            appMessage.command = "CHECK_ONLINE";
+
+            string json = JsonConvert.SerializeObject(appMessage);
+
+            var broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
         }
-
-        private void UpdateInfo(CustomAppMessage customAppMessage)
+        private void SetDeviceOnline(AppMessage appMessage)
         {
-            string imei = customAppMessage.imei;
-            string data = listBox1.GetItemText(listBox1.SelectedItem);
-            if (String.IsNullOrEmpty(data)) return;
-            string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
-            if (imei.Equals(arrayValue[1]))
+            string imei = appMessage.imei;
+            foreach (ListViewItem i in listView1.Items)
             {
-                PhoneInfoUpdate phoneInfoUpdate = JsonConvert.DeserializeObject<PhoneInfoUpdate>(customAppMessage.content.ToString());
-                txtNetworkName.Text = phoneInfoUpdate.networkName;
-                txtNetworkType.Text = phoneInfoUpdate.networkType;
-                txtBatteryLevel.Text = phoneInfoUpdate.batteryLevel + "%";
-                txtCharging.Text = phoneInfoUpdate.isCharging.ToString();
-            }
-        }
-
-        private void LocationUpdated(CustomAppMessage customAppMessage)
-        {
-            string imei = customAppMessage.imei;
-            string data = listBox1.GetItemText(listBox1.SelectedItem);
-            if (String.IsNullOrEmpty(data)) return;
-            string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
-            if (imei.Equals(arrayValue[1]))
-            {
-                txtLastUpdate.Text = DateTime.Now.ToString("dd/MM/yy HH:mm:ss");
-
-                UpdateInfo(imei);
-                GetLocation(imei);
-            }
-        }
-
-        private void GetLocation(CustomAppMessage customAppMessage)
-        {
-            CleanGmap();
-            locationHistories.Clear();
-            string imei = customAppMessage.imei;
-            string data = listBox1.GetItemText(listBox1.SelectedItem);
-            if (String.IsNullOrEmpty(data)) return;
-            string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
-            if (imei.Equals(arrayValue[1]))
-            {
-                ArrayList arrayList = JsonConvert.DeserializeObject<ArrayList>(customAppMessage.content.ToString());
-                foreach (var item in arrayList)
+                if(i.SubItems[1].Text.Equals(imei))
                 {
-                    JsonLocationHistory jsonLocationHistory = JsonConvert.DeserializeObject<JsonLocationHistory>(item.ToString());
-                    locationHistories.Add(jsonLocationHistory);
+                    i.SubItems[2].Text = "Online";
                 }
             }
-            if (showOnlyCurrentLocation)
+        }
+        private void LocationUpdated(AppMessage appMessage)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            ListViewItem item = listView1.SelectedItems[0];
+            string imei = item.SubItems[1].Text;
+            if (imei.Equals(appMessage.imei))
             {
-                MarkedLastLocation();
+                CleanGmap();
+                txtLastUpdate.Text = DateTime.Now.ToString("dd/MM/yy HH:mm:ss");
+                locationHistories.Clear();
+                ArrayList arrayList = JsonConvert.DeserializeObject<ArrayList>(appMessage.content.ToString());
+                foreach (var i in arrayList)
+                {
+                    LocationMessage locationMessage = JsonConvert.DeserializeObject<LocationMessage>(i.ToString());
+                    locationHistories.Add(locationMessage);
+                }
+                if (showOnlyCurrentLocation)
+                {
+                    MarkedLastLocation();
+                }
+                else
+                {
+                    MarkedAllLocation();
+                }
             }
-            else
+        }
+        private void UpdateInfo(AppMessage appMessage)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            ListViewItem item = listView1.SelectedItems[0];
+            string imei = item.SubItems[1].Text;
+            if (imei.Equals(appMessage.imei))
             {
-                MarkedAllLocation();
+                PhoneInfoMessage phoneInfoMessage = JsonConvert.DeserializeObject<PhoneInfoMessage>(appMessage.content.ToString());
+                txtNetworkName.Text = phoneInfoMessage.networkName;
+                txtNetworkType.Text = phoneInfoMessage.networkType;
+                txtBatteryLevel.Text = phoneInfoMessage.batteryLevel + "%";
+                txtCharging.Text = phoneInfoMessage.isCharging.ToString();
             }
         }
         void Ws_OnClose(object sender, CloseEventArgs e)
         {
-            if(!isLogout)
+            if (!isLogout)
             {
                 Thread.Sleep(3000);
                 ConnectToServer();
@@ -210,9 +210,13 @@ namespace winform_client
             Application.Run(new LoginForm());
         }
 
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Button1_Click(sender, e);
+        }
+
         private void Button1_Click(object sender, EventArgs e)
         {
-            CleanGmap();
             txtDeviceName.Text = "Unknown";
             txtImei.Text = "Unknown";
             txtLastUpdate.Text = "Unknown";
@@ -221,10 +225,10 @@ namespace winform_client
             txtBatteryLevel.Text = "Unknown";
             txtCharging.Text = "Unknown";
 
-            CustomAppMessage custom = new CustomAppMessage();
-            custom.command = "GET_DEVICE_LIST";
+            AppMessage appMessage = new AppMessage();
+            appMessage.command = "GET_DEVICE_LIST";
 
-            string json = JsonConvert.SerializeObject(custom);
+            string json = JsonConvert.SerializeObject(appMessage);
 
             var broad = new StompMessage("SEND", json);
             broad["content-type"] = "application/json";
@@ -232,39 +236,50 @@ namespace winform_client
             ws.Send(serializer.Serialize(broad));
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private void ListView1_Leave(object sender, EventArgs e)
         {
-            Button1_Click(sender, e);
+            if (listView1.SelectedItems.Count == 0) return;
+            ListViewItem item = listView1.SelectedItems[0];
+            item.BackColor = Color.FromArgb(0, 120, 215);
+            item.ForeColor = Color.White;
         }
 
-        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CleanGmap();
-            string data = listBox1.GetItemText(listBox1.SelectedItem);
-            if (String.IsNullOrEmpty(data)) return;
-            string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
+            foreach(ListViewItem i in listView1.Items)
+            {
+                i.BackColor = Color.White;
+                i.ForeColor = Color.Black;
+            }
+            if (listView1.SelectedItems.Count == 0) return;
+            ListViewItem item = listView1.SelectedItems[0];
+            item.BackColor = Color.FromArgb(0, 120, 215);
+            item.ForeColor = Color.White;
+        }
 
-            txtDeviceName.Text = arrayValue[0];
-            txtImei.Text = arrayValue[1];
+        private void ListView1_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            ListViewItem item = listView1.SelectedItems[0];
+            string imei = item.SubItems[1].Text;
+
+            txtDeviceName.Text = item.SubItems[0].Text;
+            txtImei.Text = imei;
             txtLastUpdate.Text = "Unknown";
             txtNetworkName.Text = "Unknown";
             txtNetworkType.Text = "Unknown";
             txtBatteryLevel.Text = "Unknown";
             txtCharging.Text = "Unknown";
 
-            //Get location
-            GetLocation(arrayValue[1]);
-
             //Update info
-            UpdateInfo(arrayValue[1]);
-
-            //Update location to server
-            CallUpdateLocation(arrayValue[1]);
+            UpdateInfo(imei);
+            //Update location
+            UpdateLocation(imei);
         }
 
         private void UpdateInfo(string imei)
         {
-            CustomAppMessage appMessage = new CustomAppMessage();
+            AppMessage appMessage = new AppMessage();
             appMessage.command = "UPDATE_INFO";
             appMessage.imei = imei;
 
@@ -276,9 +291,9 @@ namespace winform_client
             ws.Send(serializer.Serialize(broad));
         }
 
-        private void CallUpdateLocation(string imei)
+        private void UpdateLocation(string imei)
         {
-            CustomAppMessage appMessage = new CustomAppMessage();
+            AppMessage appMessage = new AppMessage();
             appMessage.command = "UPDATE_LOCATION";
             appMessage.imei = imei;
 
@@ -290,29 +305,6 @@ namespace winform_client
             ws.Send(serializer.Serialize(broad));
         }
 
-        private void GetLocation(string imei)
-        {
-            CustomAppMessage appMessage = new CustomAppMessage();
-            appMessage.command = "GET_LOCATION";
-            appMessage.imei = imei;
-
-            string json = JsonConvert.SerializeObject(appMessage);
-
-            var broad = new StompMessage("SEND", json);
-            broad["content-type"] = "application/json";
-            broad["destination"] = "/app/manager";
-            ws.Send(serializer.Serialize(broad));
-        }
-
-        private void Button2_Click(object sender, EventArgs e)
-        {
-            string data = listBox1.GetItemText(listBox1.SelectedItem);
-            if (!String.IsNullOrEmpty(data))
-            {
-                ListBox1_SelectedIndexChanged(sender, e);
-            }
-        }
-
         private void CleanGmap()
         {
             gMap.Zoom = 5;
@@ -320,15 +312,24 @@ namespace winform_client
             gMap.Overlays.Add(gMapOverlay);
         }
 
+        private void InitGmap()
+        {
+            gMap.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
+            GMaps.Instance.Mode = AccessMode.ServerOnly;
+            gMap.ShowCenter = false;
+            gMap.Zoom = 16;
+            gMap.DragButton = MouseButtons.Left;
+        }
+
         private void MarkedLastLocation()
         {
             if (locationHistories.Count == 0) return;
             InitGmap();
-            JsonLocationHistory locationHistory = (JsonLocationHistory) locationHistories[0];
-            gMap.Position = new GMap.NET.PointLatLng(locationHistory.latitude, locationHistory.longitude);
-            GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(locationHistory.latitude, locationHistory.longitude), GMarkerGoogleType.red)
+            LocationMessage locationMessage = (LocationMessage)locationHistories[0];
+            gMap.Position = new GMap.NET.PointLatLng(locationMessage.latitude, locationMessage.longitude);
+            GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(locationMessage.latitude, locationMessage.longitude), GMarkerGoogleType.red)
             {
-                ToolTipText = locationHistory.timeTracking.ToString("dd/MM/yy HH:mm:ss")
+                ToolTipText = locationMessage.timeTracking.ToString("dd/MM/yy HH:mm:ss")
             };
             gMapOverlay.Markers.Add(marker);
             gMap.Overlays.Add(gMapOverlay);
@@ -339,7 +340,7 @@ namespace winform_client
             if (locationHistories.Count == 0) return;
             InitGmap();
             bool isFrist = true;
-            foreach(JsonLocationHistory l in locationHistories)
+            foreach (LocationMessage l in locationHistories)
             {
                 var styleMarker = isFrist ? GMarkerGoogleType.red : GMarkerGoogleType.red_small;
                 GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(l.latitude, l.longitude), styleMarker)
@@ -362,17 +363,26 @@ namespace winform_client
             //    gMapOverlay.Routes.Add(r);
             //}
             gMap.Overlays.Add(gMapOverlay);
-            JsonLocationHistory locationHistory = (JsonLocationHistory)locationHistories[0];
+            LocationMessage locationHistory = (LocationMessage)locationHistories[0];
             gMap.Position = new GMap.NET.PointLatLng(locationHistory.latitude, locationHistory.longitude);
         }
 
-        private void InitGmap()
+        private void CurrentToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            gMap.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
-            GMaps.Instance.Mode = AccessMode.ServerOnly;
-            gMap.ShowCenter = false;
-            gMap.Zoom = 16;
-            gMap.DragButton = MouseButtons.Left;
+            currentToolStripMenuItem.Checked = true;
+            allToolStripMenuItem.Checked = false;
+            showOnlyCurrentLocation = true;
+            CleanGmap();
+            MarkedLastLocation();
+        }
+
+        private void AllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentToolStripMenuItem.Checked = false;
+            allToolStripMenuItem.Checked = true;
+            showOnlyCurrentLocation = false;
+            CleanGmap();
+            MarkedAllLocation();
         }
 
         private static bool flagClickMarker = true;
@@ -403,40 +413,19 @@ namespace winform_client
             }
         }
 
-        private void CurrentLocationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
-            currentLocationToolStripMenuItem.Checked = true;
-            routesToolStripMenuItem.Checked = false;
-            showOnlyCurrentLocation = true;
-            CleanGmap();
-            MarkedLastLocation();
+            ListView1_Click(sender, e);
         }
 
-        private void HistoryToolStripMenuItem_Click(object sender, EventArgs e)
+        private void TurnOffServicesOnCurrentDeviceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            currentLocationToolStripMenuItem.Checked = false;
-            routesToolStripMenuItem.Checked = true;
-            showOnlyCurrentLocation = false;
-            CleanGmap();
-            MarkedAllLocation();
-        }
+            if (listView1.SelectedItems.Count == 0) return;
+            ListViewItem item = listView1.SelectedItems[0];
+            string imei = item.SubItems[1].Text;
 
-        private void DeleteCurrentDeviceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string data = listBox1.GetItemText(listBox1.SelectedItem);
-            if (String.IsNullOrEmpty(data))
-            {
-                MessageBox.Show("Failed to send Shutdown command, no device selected", "Take an error!", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                return;
-            };
-            DialogResult dialogResult = MessageBox.Show("This operation cannot be undone, do you want to delete the device?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (dialogResult == DialogResult.No) return;
-
-            string[] arrayValue = data.Split(new[] { " | " }, StringSplitOptions.None);
-            string imei = arrayValue[1];
-
-            CustomAppMessage appMessage = new CustomAppMessage();
-            appMessage.command = "SHUTDOWN_ALL";
+            AppMessage appMessage = new AppMessage();
+            appMessage.command = "TURN_OFF_SERVICES";
             appMessage.imei = imei;
 
             string json = JsonConvert.SerializeObject(appMessage);
@@ -446,7 +435,27 @@ namespace winform_client
             broad["destination"] = "/app/manager";
             ws.Send(serializer.Serialize(broad));
 
-            MessageBox.Show("Send Shutdown command successfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Turn off all services on current device", "Successfully", MessageBoxButtons.OK);
+        }
+
+        private void TurnOnServicesOnCurrentDeviceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            ListViewItem item = listView1.SelectedItems[0];
+            string imei = item.SubItems[1].Text;
+
+            AppMessage appMessage = new AppMessage();
+            appMessage.command = "TURN_ON_SERVICES";
+            appMessage.imei = imei;
+
+            string json = JsonConvert.SerializeObject(appMessage);
+
+            var broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
+
+            MessageBox.Show("Turn on all services on current device", "Successfully", MessageBoxButtons.OK);
         }
     }
 }

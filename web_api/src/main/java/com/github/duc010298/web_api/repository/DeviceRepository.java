@@ -13,3 +13,4 @@ public interface DeviceRepository extends JpaRepository<Device, String> {
 
 	List<Device> findAllByAppUser(AppUser appUser);
 }
+

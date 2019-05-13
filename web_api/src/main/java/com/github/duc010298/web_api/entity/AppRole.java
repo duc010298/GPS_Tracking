@@ -10,7 +10,7 @@ import java.util.List;
  * 
  */
 @Entity
-@Table(name="app_role", schema = "public")
+@Table(name="app_role")
 public class AppRole implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Long roleId;

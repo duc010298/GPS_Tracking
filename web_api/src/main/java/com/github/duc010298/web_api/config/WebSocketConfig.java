@@ -8,7 +8,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import com.github.duc010298.web_api.services.AuthChannelInterceptorImpl;
+import com.github.duc010298.web_api.component.AuthChannelInterceptorImpl;
 
 @Configuration
 @EnableWebSocketMessageBroker
