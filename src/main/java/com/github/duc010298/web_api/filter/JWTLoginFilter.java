@@ -2,6 +2,7 @@ package com.github.duc010298.web_api.filter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.FilterChain;
@@ -43,6 +44,10 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         
         AppUser appUserEntity = appUserRepository.findByUserName(username);
 		if (appUserEntity == null) return null;
+		
+		Date expiryDate = appUserEntity.getExpiryDate();
+		if(expiryDate != null && expiryDate.before(new Date())) return null;
+		
         List<String> roleNames = this.appRoleRepository.getRoleNames(appUserEntity.getUserId());
 
 		List<GrantedAuthority> grantList = new ArrayList<>();

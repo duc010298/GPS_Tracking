@@ -1,4 +1,4 @@
-package com.github.duc010298.web_api.services;
+package com.github.duc010298.web_api.component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.github.duc010298.web_api.entity.AppUser;
 import com.github.duc010298.web_api.repository.AppRoleRepository;
 import com.github.duc010298.web_api.repository.AppUserRepository;
+import com.github.duc010298.web_api.services.TokenAuthenticationService;
 
 @Component
 public class AuthChannelInterceptorImpl implements ChannelInterceptor {

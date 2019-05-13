@@ -13,8 +13,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class TokenAuthenticationService {
 
-	static final long EXPIRATIONTIME = 604_800_000; // Token available 7 days
-
 	static final String SECRET = "01021998";
 
 	static final String TOKEN_PREFIX = "Bearer";
@@ -23,7 +21,6 @@ public class TokenAuthenticationService {
 
 	public static void addAuthentication(HttpServletResponse res, String username) {
 		String JWT = Jwts.builder().setSubject(username).setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
 				.signWith(SignatureAlgorithm.HS512, SECRET).compact();
 		res.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + JWT);
 	}
@@ -68,15 +65,4 @@ public class TokenAuthenticationService {
 		}
 		return null;
 	}
-
-//    private static String getRandomString() {
-//    	int n = 8;
-//        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz"; 
-//        StringBuilder sb = new StringBuilder(n); 
-//        for (int i = 0; i < n; i++) { 
-//            int index = (int)(AlphaNumericString.length() * Math.random()); 
-//            sb.append(AlphaNumericString.charAt(index)); 
-//        } 
-//    	return sb.toString();
-//    }
 }

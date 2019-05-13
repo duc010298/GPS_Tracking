@@ -1,7 +1,7 @@
-package com.github.duc010298.web_api.entity.httpEntity;
+package com.github.duc010298.web_api.entity.http;
 
-public class LocationRequest {
-	private long time;
+public class CustomLocation {
+    private long time;
     private double latitude;
     private double longitude;
 

@@ -1,7 +1,7 @@
 package com.github.duc010298.web_api.entity.socket;
 
-public class CustomAppMessage {
-    private String command;
+public class AppMessage {
+	private String command;
     private String imei;
     private Object content;
 

@@ -12,13 +12,17 @@ import java.util.UUID;
  * 
  */
 @Entity
-@Table(name="app_user", schema = "public")
+@Table(name="app_user")
 public class AppUser implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private UUID userId;
+	private String email;
 	private String encryptedPassword;
+	private Date expiryDate;
+	private UUID resetPasswordToken;
 	private Date tokenActiveAfter;
 	private String userName;
+	private List<Device> devices;
 	private List<AppRole> appRoles;
 
 	public AppUser() {
@@ -26,7 +30,6 @@ public class AppUser implements Serializable {
 
 
 	@Id
-	@org.hibernate.annotations.Type(type = "pg-uuid")
 	@Column(name="user_id")
 	public UUID getUserId() {
 		return this.userId;
@@ -34,6 +37,15 @@ public class AppUser implements Serializable {
 
 	public void setUserId(UUID userId) {
 		this.userId = userId;
+	}
+
+
+	public String getEmail() {
+		return this.email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 
@@ -47,7 +59,26 @@ public class AppUser implements Serializable {
 	}
 
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="expiry_date")
+	public Date getExpiryDate() {
+		return this.expiryDate;
+	}
+
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
+	}
+
+
+	@Column(name="reset_password_token")
+	public UUID getResetPasswordToken() {
+		return this.resetPasswordToken;
+	}
+
+	public void setResetPasswordToken(UUID resetPasswordToken) {
+		this.resetPasswordToken = resetPasswordToken;
+	}
+
+
 	@Column(name="token_active_after")
 	public Date getTokenActiveAfter() {
 		return this.tokenActiveAfter;
@@ -65,6 +96,31 @@ public class AppUser implements Serializable {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+
+	//bi-directional many-to-one association to Device
+	@OneToMany(mappedBy="appUser")
+	public List<Device> getDevices() {
+		return this.devices;
+	}
+
+	public void setDevices(List<Device> devices) {
+		this.devices = devices;
+	}
+
+	public Device addDevice(Device device) {
+		getDevices().add(device);
+		device.setAppUser(this);
+
+		return device;
+	}
+
+	public Device removeDevice(Device device) {
+		getDevices().remove(device);
+		device.setAppUser(null);
+
+		return device;
 	}
 
 

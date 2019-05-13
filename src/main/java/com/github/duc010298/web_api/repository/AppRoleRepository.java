@@ -12,4 +12,3 @@ public interface AppRoleRepository extends JpaRepository<AppRole, Long> {
     @Query("SELECT r.roleName FROM AppRole r JOIN r.appUsers u WHERE u.userId = ?1")
     List<String> getRoleNames(UUID userId);
 }
-

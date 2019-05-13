@@ -2,7 +2,7 @@ package com.github.duc010298.web_api.entity.socket;
 
 import java.util.Date;
 
-public class JsonLocationHistory {
+public class LocationMessage {
 	private String locationId;
 	private double latitude;
 	private double longitude;
@@ -32,5 +32,4 @@ public class JsonLocationHistory {
 	public void setTimeTracking(Date timeTracking) {
 		this.timeTracking = timeTracking;
 	}
-	
 }
