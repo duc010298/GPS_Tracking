@@ -22,6 +22,7 @@ import com.github.duc010298.web_api.entity.Device;
 import com.github.duc010298.web_api.entity.http.PhoneInfo;
 import com.github.duc010298.web_api.entity.http.UpdateFcmTokenRequest;
 import com.github.duc010298.web_api.entity.socket.AppMessage;
+import com.github.duc010298.web_api.entity.socket.PhoneInfoMessage;
 import com.github.duc010298.web_api.repository.AppUserRepository;
 import com.github.duc010298.web_api.repository.DeviceRepository;
 
@@ -121,7 +122,20 @@ public class DeviceController {
 		if(!device.getAppUser().equals(appUser)) {
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Device is registered for another account");
 		}
-		//TODO send websocket here
+		
+		PhoneInfoMessage phoneInfoMessage = new PhoneInfoMessage();
+		phoneInfoMessage.setNetworkName(phoneInfo.getNetworkName());
+		phoneInfoMessage.setNetworkType(phoneInfo.getNetworkType());
+		phoneInfoMessage.setBatteryLevel(phoneInfo.getBatteryLevel());
+		phoneInfoMessage.setCharging(phoneInfo.isCharging());
+		
+		AppMessage appMessage = new AppMessage();
+		appMessage.setCommand("UPDATE_INFO");
+		appMessage.setImei(device.getImei());
+		appMessage.setContent(phoneInfoMessage);
+		
+		simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", appMessage);
+		
 		return ResponseEntity.status(HttpStatus.OK).body("Update device info success");
 	}
 }

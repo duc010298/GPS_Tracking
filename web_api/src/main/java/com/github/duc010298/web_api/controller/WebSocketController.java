@@ -79,7 +79,8 @@ public class WebSocketController {
 			return;
 		}
 		if(appMessage.getCommand().equals("UPDATE_INFO")) {
-			
+			Device device = deviceRepository.findByImei(appMessage.getImei());
+			sendToFcmCommand(device.getFcmTokenRegistration(), "UPDATE_INFO");
 		}
 		if(appMessage.getCommand().equals("UPDATE_LOCATION")) {
 			Device device = deviceRepository.findByImei(appMessage.getImei());

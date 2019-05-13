@@ -79,6 +79,9 @@ namespace winform_client
                         case "LOCATION_UPDATED":
                             LocationUpdated(appMessage);
                             break;
+                        case "UPDATE_INFO":
+                            UpdateInfo(appMessage);
+                            break;
                     }
                 }
             });
@@ -144,6 +147,20 @@ namespace winform_client
                 {
                     MarkedAllLocation();
                 }
+            }
+        }
+        private void UpdateInfo(AppMessage appMessage)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            ListViewItem item = listView1.SelectedItems[0];
+            string imei = item.SubItems[1].Text;
+            if (imei.Equals(appMessage.imei))
+            {
+                PhoneInfoMessage phoneInfoMessage = JsonConvert.DeserializeObject<PhoneInfoMessage>(appMessage.content.ToString());
+                txtNetworkName.Text = phoneInfoMessage.networkName;
+                txtNetworkType.Text = phoneInfoMessage.networkType;
+                txtBatteryLevel.Text = phoneInfoMessage.batteryLevel + "%";
+                txtCharging.Text = phoneInfoMessage.isCharging.ToString();
             }
         }
         void Ws_OnClose(object sender, CloseEventArgs e)
@@ -262,7 +279,16 @@ namespace winform_client
 
         private void UpdateInfo(string imei)
         {
+            AppMessage appMessage = new AppMessage();
+            appMessage.command = "UPDATE_INFO";
+            appMessage.imei = imei;
 
+            string json = JsonConvert.SerializeObject(appMessage);
+
+            var broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
         }
 
         private void UpdateLocation(string imei)
