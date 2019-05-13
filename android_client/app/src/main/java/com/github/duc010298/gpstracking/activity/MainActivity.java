@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText txtPassword;
     private final long UPDATE_INTERVAL = 600000;
     private final long FASTEST_INTERVAL = 600000;
-    private final int REQUEST_CHECK_SETTINGS = 1998;
+    private final int REQUEST_CHECK_SETTINGS = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +47,21 @@ public class MainActivity extends AppCompatActivity {
 
         context = this;
 
+        connectView();
+
         checkPermission();
 
         if(!(GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS)) {
             Toast.makeText(this, getString(R.string.noti3), Toast.LENGTH_LONG).show();
-            finish();
+            GoogleApiAvailability
+                    .getInstance()
+                    .getErrorDialog(this, 99 ,101).show();
+            txtUsername.setEnabled(false);
+            txtPassword.setEnabled(false);
+            findViewById(R.id.btnLogin).setEnabled(false);
         }
 
         checkLocationSetting();
-
-        connectView();
     }
 
     private void connectView() {
