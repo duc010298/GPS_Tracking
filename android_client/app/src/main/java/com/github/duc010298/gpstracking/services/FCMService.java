@@ -27,6 +27,7 @@ public class FCMService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
             Map<String, String> data = remoteMessage.getData();
             String command = data.get("command");
+            assert command != null;
             switch (command) {
                 case "CHECK_ONLINE":
                     SendRequestDeviceOnline sendRequestDeviceOnline = new SendRequestDeviceOnline(this);

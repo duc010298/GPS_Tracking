@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.github.duc010298.web_api.entity.AppUser;
 import com.github.duc010298.web_api.entity.Device;
+import com.github.duc010298.web_api.entity.LocationHistory;
 import com.github.duc010298.web_api.entity.socket.AppMessage;
 import com.github.duc010298.web_api.entity.socket.DeviceMessage;
+import com.github.duc010298.web_api.entity.socket.LocationMessage;
 import com.github.duc010298.web_api.repository.AppUserRepository;
 import com.github.duc010298.web_api.repository.DeviceRepository;
 import com.github.duc010298.web_api.repository.LocationHistoryRepository;
@@ -72,21 +74,55 @@ public class WebSocketController {
 			AppUser appUser = appUserRepository.findByUserName(username);
 			List<Device> devices = deviceRepository.findAllByAppUser(appUser);
 			for(Device d: devices) {
-				sendToFcmCheckOnline(d.getFcmTokenRegistration());
+				sendToFcmCommand(d.getFcmTokenRegistration(), "CHECK_ONLINE");
 			}
 			return;
+		}
+		if(appMessage.getCommand().equals("UPDATE_INFO")) {
+			
+		}
+		if(appMessage.getCommand().equals("UPDATE_LOCATION")) {
+			Device device = deviceRepository.findByImei(appMessage.getImei());
+			//Update location for manager
+			List<LocationHistory> locationHistories = locationHistoryRepository.findAllByDeviceOrderByTimeTrackingDesc(device);
+			ArrayList<LocationMessage> locationMessages = new ArrayList<>();
+			
+			for(LocationHistory l : locationHistories) {
+				LocationMessage temp = new LocationMessage();
+				temp.setLocationId(l.getLocationId().toString());
+				temp.setLatitude(l.getLatitude());
+				temp.setLongitude(l.getLongitude());
+				temp.setTimeTracking(l.getTimeTracking());
+				locationMessages.add(temp);
+			}
+			
+			AppMessage responseAppMessage = new AppMessage();
+			responseAppMessage.setCommand("LOCATION_UPDATED");
+			responseAppMessage.setImei(device.getImei());
+			responseAppMessage.setContent(locationMessages);
+			simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", responseAppMessage);
+			
+			//Send FCM to get current location
+			sendToFcmCommand(device.getFcmTokenRegistration(), "UPDATE_LOCATION");
+			return;
+		}
+		if(appMessage.getCommand().equals("TURN_OFF_SERVICES")) {
+			
+		}
+		if(appMessage.getCommand().equals("TURN_ON_SERVICES")) {
+	
 		}
 	}
 	
 	/*
-	 * Send FCM request to check android client is online
+	 * Send FCM command
 	 */
-	public void sendToFcmCheckOnline(String tokenRegistration) {
+	public void sendToFcmCommand(String tokenRegistration, String command) {
 		JSONObject body = new JSONObject();
 	    body.put("to", tokenRegistration);
 	    
 	    JSONObject data = new JSONObject();
-	    data.put("command", "CHECK_ONLINE");
+	    data.put("command", command);
 	    
 	    body.put("data", data);
 	    

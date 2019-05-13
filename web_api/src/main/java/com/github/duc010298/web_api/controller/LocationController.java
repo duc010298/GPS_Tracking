@@ -1,5 +1,6 @@
 package com.github.duc010298.web_api.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +21,8 @@ import com.github.duc010298.web_api.entity.Device;
 import com.github.duc010298.web_api.entity.LocationHistory;
 import com.github.duc010298.web_api.entity.http.CustomLocation;
 import com.github.duc010298.web_api.entity.http.LocationHistoryRequest;
+import com.github.duc010298.web_api.entity.socket.AppMessage;
+import com.github.duc010298.web_api.entity.socket.LocationMessage;
 import com.github.duc010298.web_api.repository.DeviceRepository;
 import com.github.duc010298.web_api.repository.LocationHistoryRepository;
 
@@ -41,6 +46,9 @@ public class LocationController {
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, 
 			produces = "text/plain;charset=UTF-8")
     public ResponseEntity<String> updateLocation(@RequestBody LocationHistoryRequest locationHistoryRequest) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = (String) auth.getPrincipal();
+		
 		Device device = deviceRepository.findByImei(locationHistoryRequest.getImei());
 		
 		LocationHistory locationHistory;
@@ -65,11 +73,24 @@ public class LocationController {
 		device.setLastUpdate(new Date());
 		deviceRepository.save(device);
 		
-		//TODO send websocket here
-//		CustomAppMessage appMessage = new CustomAppMessage();
-//		appMessage.setCommand("LOCATION_UPDATED");
-//		appMessage.setImei(device.getImei());
-//		simpMessagingTemplate.convertAndSendToUser(device.getAppUser().getUserName(), "/topic/manager", appMessage);
+		//Update location for manager
+		List<LocationHistory> locationHistories = locationHistoryRepository.findAllByDeviceOrderByTimeTrackingDesc(device);
+		ArrayList<LocationMessage> locationMessages = new ArrayList<>();
+		
+		for(LocationHistory l : locationHistories) {
+			LocationMessage temp = new LocationMessage();
+			temp.setLocationId(l.getLocationId().toString());
+			temp.setLatitude(l.getLatitude());
+			temp.setLongitude(l.getLongitude());
+			temp.setTimeTracking(l.getTimeTracking());
+			locationMessages.add(temp);
+		}
+		
+		AppMessage appMessage = new AppMessage();
+		appMessage.setCommand("LOCATION_UPDATED");
+		appMessage.setImei(device.getImei());
+		appMessage.setContent(locationMessages);
+		simpMessagingTemplate.convertAndSendToUser(username, "/topic/manager", appMessage);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body("Add new location successfully");
     }

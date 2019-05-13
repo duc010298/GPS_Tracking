@@ -126,14 +126,16 @@
             this.currentToolStripMenuItem.Checked = true;
             this.currentToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.currentToolStripMenuItem.Name = "currentToolStripMenuItem";
-            this.currentToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.currentToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.currentToolStripMenuItem.Text = "Current";
+            this.currentToolStripMenuItem.Click += new System.EventHandler(this.CurrentToolStripMenuItem_Click);
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.allToolStripMenuItem.Text = "All";
+            this.allToolStripMenuItem.Click += new System.EventHandler(this.AllToolStripMenuItem_Click);
             // 
             // devicesToolStripMenuItem
             // 
@@ -381,6 +383,7 @@
             this.button2.Size = new System.Drawing.Size(32, 32);
             this.button2.TabIndex = 2;
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
             // panel1
             // 
@@ -422,6 +425,7 @@
             this.gMap.Size = new System.Drawing.Size(714, 600);
             this.gMap.TabIndex = 0;
             this.gMap.Zoom = 0D;
+            this.gMap.OnMarkerClick += new GMap.NET.WindowsForms.MarkerClick(this.GMap_OnMarkerClick);
             // 
             // MainForm
             // 

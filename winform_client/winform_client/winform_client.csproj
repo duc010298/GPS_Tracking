@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Entity\AppMessage.cs" />
     <Compile Include="Entity\DeviceMessage.cs" />
+    <Compile Include="Entity\LocationMessage.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
