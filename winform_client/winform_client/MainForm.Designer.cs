@@ -126,14 +126,14 @@
             this.currentToolStripMenuItem.Checked = true;
             this.currentToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.currentToolStripMenuItem.Name = "currentToolStripMenuItem";
-            this.currentToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.currentToolStripMenuItem.Text = "Current";
             this.currentToolStripMenuItem.Click += new System.EventHandler(this.CurrentToolStripMenuItem_Click);
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.allToolStripMenuItem.Text = "All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.AllToolStripMenuItem_Click);
             // 
@@ -151,12 +151,14 @@
             this.turnOffServicesOnCurrentDeviceToolStripMenuItem.Name = "turnOffServicesOnCurrentDeviceToolStripMenuItem";
             this.turnOffServicesOnCurrentDeviceToolStripMenuItem.Size = new System.Drawing.Size(256, 22);
             this.turnOffServicesOnCurrentDeviceToolStripMenuItem.Text = "Turn off services on current device";
+            this.turnOffServicesOnCurrentDeviceToolStripMenuItem.Click += new System.EventHandler(this.TurnOffServicesOnCurrentDeviceToolStripMenuItem_Click);
             // 
             // turnOnServicesOnCurrentDeviceToolStripMenuItem
             // 
             this.turnOnServicesOnCurrentDeviceToolStripMenuItem.Name = "turnOnServicesOnCurrentDeviceToolStripMenuItem";
             this.turnOnServicesOnCurrentDeviceToolStripMenuItem.Size = new System.Drawing.Size(256, 22);
             this.turnOnServicesOnCurrentDeviceToolStripMenuItem.Text = "Turn on services on current device";
+            this.turnOnServicesOnCurrentDeviceToolStripMenuItem.Click += new System.EventHandler(this.TurnOnServicesOnCurrentDeviceToolStripMenuItem_Click);
             // 
             // label1
             // 

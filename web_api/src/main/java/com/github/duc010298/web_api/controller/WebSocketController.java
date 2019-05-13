@@ -108,10 +108,14 @@ public class WebSocketController {
 			return;
 		}
 		if(appMessage.getCommand().equals("TURN_OFF_SERVICES")) {
-			
+			Device device = deviceRepository.findByImei(appMessage.getImei());
+			sendToFcmCommand(device.getFcmTokenRegistration(), "TURN_OFF_SERVICES");
+			return;
 		}
 		if(appMessage.getCommand().equals("TURN_ON_SERVICES")) {
-	
+			Device device = deviceRepository.findByImei(appMessage.getImei());
+			sendToFcmCommand(device.getFcmTokenRegistration(), "TURN_ON_SERVICES");
+			return;
 		}
 	}
 	

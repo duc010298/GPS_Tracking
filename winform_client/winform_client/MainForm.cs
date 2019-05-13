@@ -417,5 +417,45 @@ namespace winform_client
         {
             ListView1_Click(sender, e);
         }
+
+        private void TurnOffServicesOnCurrentDeviceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            ListViewItem item = listView1.SelectedItems[0];
+            string imei = item.SubItems[1].Text;
+
+            AppMessage appMessage = new AppMessage();
+            appMessage.command = "TURN_OFF_SERVICES";
+            appMessage.imei = imei;
+
+            string json = JsonConvert.SerializeObject(appMessage);
+
+            var broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
+
+            MessageBox.Show("Turn off all services on current device", "Successfully", MessageBoxButtons.OK);
+        }
+
+        private void TurnOnServicesOnCurrentDeviceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            ListViewItem item = listView1.SelectedItems[0];
+            string imei = item.SubItems[1].Text;
+
+            AppMessage appMessage = new AppMessage();
+            appMessage.command = "TURN_ON_SERVICES";
+            appMessage.imei = imei;
+
+            string json = JsonConvert.SerializeObject(appMessage);
+
+            var broad = new StompMessage("SEND", json);
+            broad["content-type"] = "application/json";
+            broad["destination"] = "/app/manager";
+            ws.Send(serializer.Serialize(broad));
+
+            MessageBox.Show("Turn on all services on current device", "Successfully", MessageBoxButtons.OK);
+        }
     }
 }
